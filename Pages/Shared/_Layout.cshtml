@@ -1,0 +1,58 @@
+@{
+    var path = Context.Request.Path.Value ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - LearnHub</title>
+    <link rel="icon" href="~/images/Logo.jpg" type="image/jpeg" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <header class="header">
+        <a class="brand" asp-page="/Index">
+            <img src="~/images/Logo.jpg" alt="LearnHub" width="36" height="36" /> LearnHub
+        </a>
+        <nav>
+            <a asp-page="/Index" class="@(path == "/" || path.StartsWith("/Index") ? "active" : "")">Explore courses</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-page="/Member/Dashboard" class="@(path.StartsWith("/Member/Dashboard") ? "active" : "")">My learning</a>
+                <a asp-page="/Member/Profile" class="@(path.StartsWith("/Member/Profile") ? "active" : "")">My profile</a>
+                <a asp-page="/Member/History" class="@(path.StartsWith("/Member/History") ? "active" : "")">Quiz history</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-page="/Admin/Index" class="@(path.StartsWith("/Admin") ? "active" : "")">Administration</a>
+                }
+                <form method="post" asp-page="/Account/Logout">
+                    <button type="submit" class="quiet">Sign out</button>
+                </form>
+            }
+            else
+            {
+                <a asp-page="/Account/Login">Sign in</a>
+                <a class="button small" asp-page="/Account/Register">Join LearnHub</a>
+            }
+        </nav>
+    </header>
+
+    <main id="main" class="container">
+        @if (TempData["Message"] != null)
+        {
+            <div class="notice">@TempData["Message"]</div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        LearnHub <span>Learn a little. Build something.</span>
+        <a asp-page="/About">About this platform</a>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

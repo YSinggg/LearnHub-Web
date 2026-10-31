@@ -1,0 +1,89 @@
+@page
+@model LearnHub.Pages.Member.StudyModel
+@{
+    ViewData["Title"] = Model.Course.Title;
+    var lessons = Model.Course.Lessons;
+}
+
+<a asp-page="/Member/Dashboard">&larr; My learning</a>
+<p class="eyebrow spaced">@Model.Course.Category</p>
+<h1>@Model.Course.Title</h1>
+<a asp-page="/Member/Discussion" asp-route-id="@Model.Course.Id">Course discussion</a>
+
+<div class="study">
+    <aside class="panel">
+        <h2>Course lessons</h2>
+        <nav class="lesson-list">
+            @foreach (var lesson in lessons)
+            {
+                <a class="lesson-link" href="#lesson-@lesson.Id">
+                    @(lesson.Position). @lesson.Title @(Model.Completed.Contains(lesson.Id) ? "✓" : "")
+                </a>
+            }
+        </nav>
+        <a class="button" asp-page="/Member/Quiz" asp-route-id="@Model.Course.Id">Take the quiz</a>
+    </aside>
+
+    <div class="lesson-column">
+        @for (int i = 0; i < lessons.Count; i++)
+        {
+            var lesson = lessons[i];
+            var completed = Model.Completed.Contains(lesson.Id);
+
+            <article id="lesson-@lesson.Id" class="panel lesson">
+                <p class="eyebrow">LESSON @lesson.Position</p>
+                <h2>@lesson.Title</h2>
+                <div class="lesson-content">@lesson.Content</div>
+
+                @if (!string.IsNullOrEmpty(lesson.ImagePath))
+                {
+                    <figure>
+                        <img class="learning-diagram" src="@lesson.ImagePath" alt="@lesson.ImageAlt" width="800" height="320" loading="lazy" />
+                        <figcaption>@lesson.ImageAlt</figcaption>
+                    </figure>
+                }
+
+                <partial name="_LessonVideo" model="lesson" />
+                <a asp-page="/Member/Notes" asp-route-id="@Model.Course.Id" asp-route-lessonId="@lesson.Id">My private notes</a>
+
+                <div class="lesson-nav">
+                    @if (i > 0)
+                    {
+                        <a href="#lesson-@lessons[i - 1].Id">&larr; Previous lesson</a>
+                    }
+                    @if (i + 1 < lessons.Count)
+                    {
+                        <a href="#lesson-@lessons[i + 1].Id">Next lesson &rarr;</a>
+                    }
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="id" value="@Model.Course.Id" />
+                    <input type="hidden" name="lessonId" value="@lesson.Id" />
+                    <input type="hidden" name="complete" value="@(completed ? "false" : "true")" />
+                    <button type="submit" class="@(completed ? "secondary" : "")">
+                        @(completed ? "Mark as incomplete" : "Mark as complete")
+                    </button>
+                </form>
+            </article>
+        }
+
+        @if (lessons.Count == 0)
+        {
+            <p class="empty">Lessons are being prepared. Check back soon.</p>
+        }
+    </div>
+</div>
+
+@if (Model.Course.Category is "web Development" or "Javascript")
+{
+    <section class="panel spaced">
+        <h2>Try it in the browser</h2>
+        <p>Practise HTML, CSS and JavaScript below. This sandbox does not save your work.</p>
+        <label for="playground">Your code</label>
+        <textarea id="playground" rows="10" spellcheck="false">&lt;h1&gt;Hello LearnHub&lt;/h1&gt;
+&lt;style&gt;h1 { color: royalblue; }&lt;/style&gt;</textarea>
+        <button type="button" id="run-code">Run code</button>
+        <iframe id="code-preview" title="Your code preview" sandbox="allow-scripts" class="lesson-video"></iframe>
+    </section>
+}

@@ -1,0 +1,31 @@
+@page
+@model LearnHub.Pages.Account.RegisterModel
+@{ ViewData["Title"] = "Create account"; }
+<section class="auth panel">
+    <p class="eyebrow">WELCOME TO LEARNHUB</p>
+    <h1>Create your account</h1>
+    <p>Save your progress and put your knowledge into practice.</p>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <label asp-for="Input.FullName"></label>
+        <input asp-for="Input.FullName" required maxlength="100" autocomplete="name" />
+        <span asp-validation-for="Input.FullName" class="field-validation-error"></span>
+
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" autocomplete="email" required maxlength="254" />
+        <span asp-validation-for="Input.Email" class="field-validation-error"></span>
+
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" autocomplete="new-password" required minlength="10" maxlength="100" />
+        <span asp-validation-for="Input.Password" class="field-validation-error"></span>
+        <small>At least 10 characters, with uppercase, lowercase, a number and a symbol.</small>
+
+        <label asp-for="Input.ConfirmPassword"></label>
+        <input asp-for="Input.ConfirmPassword" autocomplete="new-password" required maxlength="100" />
+        <span asp-validation-for="Input.ConfirmPassword" class="field-validation-error"></span>
+
+        <button>Create account</button>
+    </form>
+    <p>Already registered? <a asp-page="/Account/Login">Sign in</a></p>
+</section>

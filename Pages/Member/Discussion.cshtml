@@ -1,0 +1,86 @@
+@page
+@model LearnHub.Pages.Member.DiscussionModel
+@{ ViewData["Title"] = "Course discussion"; }
+<a asp-page="/Member/Study" asp-route-id="@Model.Id">← Back to lessons</a>
+<h1>@Model.CourseTitle discussion</h1>
+<p>Ask a question, answer someone else's or share an example. Posts are visible to learners enrolled in this course, and administrators can remove posts that break the rules.</p>
+
+@if (Model.Threads.Count == 0)
+{
+    <p class="empty">No posts yet. Start the conversation below.</p>
+}
+
+@foreach (var post in Model.Threads)
+{
+    var replies = Model.RepliesTo(post.Id);
+    <article class="panel spaced post" id="post-@post.Id">
+        <h2>@post.AuthorName</h2>
+        <small>@post.UpdatedUtc.ToString("yyyy-MM-dd HH:mm") UTC</small>
+        <p class="lesson-content">@post.Body</p>
+        <div class="post-actions">
+            <a asp-route-id="@Model.Id" asp-route-reply="@post.Id" asp-fragment="post-form">Reply</a>
+            @if (post.UserId == Model.CurrentUserId)
+            {
+                <a asp-route-id="@Model.Id" asp-route-edit="@post.Id" asp-fragment="post-form">Edit</a>
+                <form method="post" asp-page-handler="Delete" data-confirm="Delete this post and any replies to it?">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <input type="hidden" name="PostId" value="@post.Id" />
+                    <button class="quiet danger-text">Delete</button>
+                </form>
+            }
+        </div>
+
+        @if (replies.Count > 0)
+        {
+            <section class="replies">
+                @foreach (var reply in replies)
+                {
+                    <article class="reply" id="post-@reply.Id">
+                        <h3>@reply.AuthorName</h3>
+                        <small>@reply.UpdatedUtc.ToString(format: "yyyy-MM-dd HH:mm") UTC</small>
+                        <p class="lesson-content">@reply.Body</p>
+                        @if (reply.UserId == Model.CurrentUserId)
+                        {
+                            <div class="post-actions">
+                                <a asp-route-id="@Model.Id" asp-route-edit="@reply.Id" asp-fragment="post-form">Edit</a>
+                                <form method="post" asp-page-handler="Delete" data-confirm="Delete this reply?">
+                                    <input type="hidden" name="Id" value="@Model.Id" />
+                                    <input type="hidden" name="PostId" value="@reply.Id" />
+                                    <button class="quiet danger-text">Delete</button>
+                                </form>
+                            </div>
+                        }
+                    </article>
+                }
+            </section>
+        }
+    </article>
+}
+
+<form method="post" asp-page-handler="Save" class="panel spaced" id="post-form">
+    @if (Model.PostId != 0)
+    {
+        <h2>Edit your post</h2>
+    }
+    else if (Model.ReplyingTo is not null)
+    {
+        <h2>Reply to @Model.ReplyingTo.AuthorName</h2>
+        <blockquote class="quoted">@Model.ReplyingTo.Body</blockquote>
+    }
+    else
+    {
+        <h2>Add a post</h2>
+    }
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PostId" />
+    <input type="hidden" asp-for="ParentId" />
+    <label asp-for="Body">Message</label>
+    <textarea asp-for="Body" required maxlength="2000" rows="5"></textarea>
+    <span asp-validation-for="Body" class="field-validation-error"></span>
+    <button>@(Model.ReplyingTo is not null && Model.PostId == 0 ? "Post reply" : "Save post")</button>
+    @if (Model.PostId != 0 || Model.ReplyingTo is not null)
+    {
+        <a asp-route-id="@Model.Id">Cancel</a>
+    }
+</form>

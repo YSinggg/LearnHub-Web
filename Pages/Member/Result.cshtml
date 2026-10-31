@@ -1,0 +1,48 @@
+@page
+@model LearnHub.Pages.Member.ResultModel
+@{ ViewData["Title"] = "Quiz result"; }
+@section Styles {
+    <style>
+        .answer-review {
+            border-left: 5px solid var(--blue);
+            margin: 1.5rem 0;
+        }
+        .answer-review.correct {
+            border-left-color: #1f8a5b;
+        }
+        .answer-review.incorrect {
+            border-left-color: #ae2434;
+        }
+        .answer-review h2 {
+            font-size: 1.2rem;
+        }
+    </style>
+}
+
+<section class="panel editor">
+    <p class="eyebrow">KNOWLEDGE CHECK COMPLETE</p>
+    <h1>@Model.Attempt.CourseTitle</h1>
+    <p class="score">@Model.Attempt.Score <span>/ @Model.Attempt.Total</span></p>
+    <p>Your score has been saved. Revisit the lessons or try again when you are ready.</p>
+    <div class="row">
+        <a class="button" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">Review lessons</a>
+        <a asp-page="/Member/Dashboard">My learning</a>
+    </div>
+</section>
+
+<h2>Answer review</h2>
+@if (Model.Answers.Count == 0)
+{
+    <p>This older attempt has no saved answers.</p>
+}
+@foreach (var answer in Model.Answers)
+{
+    <article class="panel answer-review @(answer.IsCorrect ? "correct" : "incorrect")">
+        <h2>@answer.Prompt</h2>
+        <p><strong>@(answer.IsCorrect ? "Correct" : "Review this topic")</strong></p>
+        <p>Your answer: @answer.ChosenText</p>
+        <p>Correct answer: @answer.CorrectText</p>
+        <p>@answer.Explanation</p>
+    </article>
+}
+<a asp-page="/Member/History">All quiz attempts</a>

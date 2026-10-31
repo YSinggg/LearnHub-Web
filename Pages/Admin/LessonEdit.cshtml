@@ -1,0 +1,45 @@
+@page
+@model LearnHub.Pages.Admin.LessonEditModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add lesson" : "Edit lesson";
+}
+<a asp-page="/Admin/Content" asp-route-id="@Model.CourseId">← Course content</a>
+<h1>@ViewData["Title"]</h1>
+<form method="post" class="panel editor">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CourseId" />
+
+    <label asp-for="Input.Title"></label>
+    <input asp-for="Input.Title" required maxlength="120" />
+    <span asp-validation-for="Input.Title" class="field-validation-error"></span>
+
+    <label asp-for="Input.Content"></label>
+    <textarea asp-for="Input.Content" rows="12" required maxlength="12000"></textarea>
+    <span asp-validation-for="Input.Content" class="field-validation-error"></span>
+
+    <label asp-for="Input.Position"></label>
+    <input asp-for="Input.Position" min="1" max="1000" required />
+    <span asp-validation-for="Input.Position" class="field-validation-error"></span>
+
+    <label asp-for="Input.VideoUrl"></label>
+    <input asp-for="Input.VideoUrl" maxlength="400" placeholder="Paste a YouTube link" />
+    <span asp-validation-for="Input.VideoUrl" class="field-validation-error"></span>
+    <div id="video-preview" class="video-preview"></div>
+
+    <label asp-for="Input.ImagePath"></label>
+    <select asp-for="Input.ImagePath">
+        <option value="">None</option>
+        @foreach (var image in Model.LessonImages)
+        {
+            <option value="@image">@System.IO.Path.GetFileNameWithoutExtension(image).Replace("-", " ")</option>
+        }
+    </select>
+    <span asp-validation-for="Input.ImagePath" class="field-validation-error"></span>
+
+    <label asp-for="Input.ImageAlt"></label>
+    <input asp-for="Input.ImageAlt" maxlength="300" />
+    <span asp-validation-for="Input.ImageAlt" class="field-validation-error"></span>
+
+    <button>Save lesson</button>
+</form>

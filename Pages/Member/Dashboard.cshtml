@@ -1,0 +1,46 @@
+@page
+@model LearnHub.Pages.Member.DashboardModel
+@{ ViewData["Title"] = "My learning"; }
+<p class="eyebrow">YOUR LEARNING SPACE</p>
+<h1>Keep moving forward.</h1>
+<div class="row">
+    <a asp-page="/Index">Explore courses</a>
+    <a asp-page="/Member/History">Quiz history</a>
+    <a asp-page="/Member/Profile">My profile</a>
+</div>
+
+<h2>My courses</h2>
+@if (Model.Courses.Count == 0)
+{
+    <p class="empty">Choose a course from the catalogue to begin.</p>
+}
+<div class="grid">
+    @foreach (var course in Model.Courses)
+    {
+        string? fragment = null;
+        if (course.NextLessonId != null)
+        {
+            fragment = $"lesson-{course.NextLessonId}";
+        }
+
+        <article class="card">
+            <span class="tag">@course.Category</span>
+            <h2>@course.Title</h2>
+            <p>@course.DoneLessons / @course.TotalLessons lessons · @course.Percent%</p>
+            <div class="progress-track">
+                <span style="width: @(course.Percent)%"></span>
+            </div>
+            <a class="button" asp-page="/Member/Study" asp-route-id="@course.Id" asp-fragment="@fragment">Continue learning</a>
+            <a class="leave-link danger-text" asp-page="/Member/Unenrol" asp-route-id="@course.Id">Leave course</a>
+        </article>
+    }
+</div>
+
+<h2 class="spaced">Recent quiz results</h2>
+@foreach (var attempt in Model.Attempts)
+{
+    <p>
+        <a asp-page="/Member/Result" asp-route-id="@attempt.Id">@attempt.CourseTitle: @attempt.Score / @attempt.Total</a>
+        · @attempt.TakenUtc.ToString("yyyy-MM-dd HH:mm") UTC
+    </p>
+}

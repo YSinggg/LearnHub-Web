@@ -1,0 +1,26 @@
+@page
+@model LearnHub.Pages.Courses.PreviewModel
+@{ ViewData["Title"] = "Free lesson preview"; }
+<a asp-page="/Courses/Details" asp-route-id="@Model.Course.Id">← Course outline</a>
+<h1>@Model.Course.Title</h1>
+<p class="eyebrow">FREE FIRST LESSON</p>
+@if (Model.Lesson is not null)
+{
+    <article class="panel">
+        <h2>@Model.Lesson.Title</h2>
+        <p class="lesson-content">@Model.Lesson.Content</p>
+        <partial name="_LessonVideo" model="Model.Lesson" />
+        @if (Model.Lesson.ImagePath != "")
+        {
+            <figure>
+                <img class="learning-diagram" src="@Model.Lesson.ImagePath" alt="@Model.Lesson.ImageAlt" width="800" height="320" />
+                <figcaption>@Model.Lesson.ImageAlt</figcaption>
+            </figure>
+        }
+    </article>
+}
+else
+{
+    <p>Lessons are being prepared.</p>
+}
+<a class="button spaced" asp-page="/Courses/Details" asp-route-id="@Model.Course.Id">Enrol to continue</a>

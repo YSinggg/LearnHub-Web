@@ -1,0 +1,50 @@
+@page
+@model LearnHub.Pages.Member.ProfileModel
+@{ ViewData["Title"] = "My profile"; }
+<h1>My profile</h1>
+<p>@Model.Email</p>
+<div asp-validation-summary="ModelOnly"></div>
+
+<form method="post" asp-page-handler="Save" class="panel editor">
+    <h2>Your details</h2>
+    <label asp-for="FullName"></label>
+    <input asp-for="FullName" required maxlength="100" />
+    <span asp-validation-for="FullName" class="field-validation-error"></span>
+    <button>Save profile</button>
+</form>
+
+<form method="post" asp-page-handler="Password" class="panel editor spaced">
+    <h2>Change password</h2>
+    <label asp-for="CurrentPassword">Current password</label>
+    <input asp-for="CurrentPassword" required autocomplete="current-password" />
+    <span asp-validation-for="CurrentPassword" class="field-validation-error"></span>
+
+    <label asp-for="NewPassword">New password</label>
+    <input asp-for="NewPassword" required minlength="10" maxlength="100" autocomplete="new-password" />
+    <span asp-validation-for="NewPassword" class="field-validation-error"></span>
+
+    <label asp-for="ConfirmPassword">Confirm new password</label>
+    <input asp-for="ConfirmPassword" required autocomplete="new-password" />
+    <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+
+    <button>Change password</button>
+</form>
+
+@if (!User.IsInRole("Admin"))
+{
+    <form method="post" asp-page-handler="Delete" class="panel editor spaced"
+          data-confirm="Permanently delete your account and all your learning records?">
+        <h2>Delete account</h2>
+        <p>This removes your enrollments, notes, posts, progress and quiz results.</p>
+        <label asp-for="DeletePassword">Current password</label>
+        <input asp-for="DeletePassword" required autocomplete="current-password"
+               data-msg-required="Enter your current password." />
+        <span asp-validation-for="DeletePassword" class="field-validation-error"></span>
+        <label>
+            <input asp-for="ConfirmDelete" required data-msg-required="Tick this box to confirm." />
+            Permanently delete my account
+        </label>
+        <span asp-validation-for="ConfirmDelete" class="field-validation-error"></span>
+        <button class="danger">Delete account</button>
+    </form>
+}

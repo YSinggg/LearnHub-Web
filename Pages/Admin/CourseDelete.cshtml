@@ -1,0 +1,16 @@
+@page
+@model LearnHub.Pages.Admin.CourseDeleteModel
+@{
+    ViewData["Title"] = "Delete course";
+}
+<section class="panel editor">
+    <h1>Delete @Model.Course.Title?</h1>
+    <p>This permanently removes the course, its lessons, questions, enrollments, progress and quiz results.</p>
+    <form method="post">
+        <input type="hidden" name="id" value="@Model.Course.Id" />
+        <div class="row">
+            <button class="danger">Delete permanently</button>
+            <a asp-page="/Admin/Index">Cancel</a>
+        </div>
+    </form>
+</section>

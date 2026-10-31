@@ -1,0 +1,14 @@
+@page
+@model LearnHub.Pages.Member.UnenrolModel
+@{ ViewData["Title"] = "Leave course"; }
+<h1>Leave @Model.Title?</h1>
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+    <label>
+        <input asp-for="Confirm" required data-msg-required="Tick this box to confirm." />
+        I understand and want to leave
+    </label>
+    <span asp-validation-for="Confirm" class="field-validation-error"></span>
+    <button class="danger">Leave course</button>
+    <a asp-page="/Member/Dashboard">Cancel</a>
+</form>

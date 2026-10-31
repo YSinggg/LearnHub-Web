@@ -1,0 +1,27 @@
+@page
+@model LearnHub.Pages.Admin.ContentModel
+@{
+    ViewData["Title"] = "Manage content";
+}
+<a asp-page="/Admin/Index">← Administration</a>
+<h1>@Model.Course.Title</h1>
+<div class="section-heading">
+    <h2>Lessons</h2>
+    <a class="button" asp-page="/Admin/LessonEdit" asp-route-courseId="@Model.Course.Id">Add lesson</a>
+</div>
+@foreach (var lesson in Model.Course.Lessons)
+{
+    <div class="panel row spread">
+        <strong>@(lesson.Position). @lesson.Title</strong>
+        <div class="row">
+            <a asp-page="/Admin/LessonEdit" asp-route-id="@lesson.Id" asp-route-courseId="@Model.Course.Id">Edit</a>
+            <form method="post" asp-page-handler="DeleteLesson" data-confirm="Delete this lesson and its progress records?">
+                <input type="hidden" name="id" value="@Model.Course.Id" />
+                <input type="hidden" name="itemId" value="@lesson.Id" />
+                <label class="confirm"><input type="checkbox" name="confirmed" value="true" required />Confirm deletion</label>
+                <button class="quiet danger-text">Delete</button>
+            </form>
+        </div>
+    </div>
+}
+<a class="button" asp-page="/Admin/Questions" asp-route-id="@Model.Course.Id">Manage quiz questions</a>

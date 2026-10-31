@@ -1,0 +1,83 @@
+@page
+@model LearnHub.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Administration";
+}
+<p class="eyebrow">ADMINISTRATOR</p>
+<h1>Administration</h1>
+<div class="row">
+    <a class="button" asp-page="/Admin/Users">Manage users</a>
+    <a class="button secondary" asp-page="/Admin/Moderation">Moderate discussions</a>
+</div>
+
+<div class="grid stats-grid spaced">
+    <article class="panel"><h2>Accounts</h2><p class="score">@Model.Stats.Accounts</p></article>
+    <article class="panel"><h2>Enrollments</h2><p class="score">@Model.Stats.Enrollments</p></article>
+    <article class="panel"><h2>Quiz attempts</h2><p class="score">@Model.Stats.Attempts</p></article>
+    <article class="panel"><h2>Average score</h2><p class="score">@Model.Stats.AveragePercent%</p></article>
+</div>
+
+@if (Model.Courses.Count > 0)
+{
+    <div class="chart-grid spaced">
+        <figure class="panel chart">
+            <figcaption><h2>Enrollments by course</h2></figcaption>
+            @foreach (var course in Model.Courses)
+            {
+                <div class="chart-row">
+                    <span class="chart-label">@course.Title</span>
+                    <span class="chart-track">
+                        <span class="chart-bar" style="width: @(course.Enrollments * 100 / Model.MaxEnrollments)%"></span>
+                    </span>
+                    <span class="chart-value">@course.Enrollments</span>
+                </div>
+            }
+        </figure>
+        <figure class="panel chart">
+            <figcaption><h2>Average quiz score</h2></figcaption>
+            @foreach (var course in Model.Courses)
+            {
+                <div class="chart-row">
+                    <span class="chart-label">@course.Title</span>
+                    <span class="chart-track">
+                        <span class="chart-bar score-bar" style="width: @(course.AveragePercent)%"></span>
+                    </span>
+                    <span class="chart-value">@course.AveragePercent%</span>
+                </div>
+            }
+        </figure>
+    </div>
+}
+
+<p class="eyebrow spaced">CONTENT MANAGEMENT</p>
+<div class="section-heading">
+    <h1>Course library</h1>
+    <a class="button" asp-page="/Admin/CourseEdit">Create course</a>
+</div>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>Course</th><th>Category</th><th>Content</th><th>Manage</th></tr></thead>
+        <tbody>
+            @foreach (var course in Model.Courses)
+            {
+                <tr>
+                    <td><strong>@course.Title</strong></td>
+                    <td>@course.Category</td>
+                    <td>@course.LessonCount lessons · @course.QuestionCount questions</td>
+                    <td>
+                        <div class="row">
+                            <a asp-page="/Admin/CourseEdit" asp-route-id="@course.Id">Edit</a>
+                            <a asp-page="/Admin/Content" asp-route-id="@course.Id">Lessons</a>
+                            <a asp-page="/Admin/Questions" asp-route-id="@course.Id">Questions</a>
+                            <a class="danger-text" asp-page="/Admin/CourseDelete" asp-route-id="@course.Id">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@if (Model.Courses.Count == 0)
+{
+    <p class="empty">Create your first course to get started.</p>
+}

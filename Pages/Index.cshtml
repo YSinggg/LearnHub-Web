@@ -1,0 +1,64 @@
+@page
+@model LearnHub.Pages.IndexModel
+@{
+    ViewData["Title"] = "Explore courses";
+}
+<section class="hero">
+    <div class="intro">
+        <p class="eyebrow">YOUR NEXT CHAPTER</p>
+        <h1>Small lessons.<br /><span>Useful skills.</span></h1>
+        <p>Explore practical courses, watch short videos, test your understanding and keep track of what you learn.</p>
+        <div class="row">
+            <a class="button" href="#catalogue">Browse courses</a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-page="/Account/Register">Create a free account</a>
+            }
+        </div>
+    </div>
+    <img class="hero-art" src="~/images/Learning.jpg" width="520" height="380"/>
+</section>
+
+<form method="get" class="search" id="catalogue">
+    <label for="q">Find your next course</label>
+    <div class="row">
+        <input id="q" name="q" value="@Model.Q" placeholder="Search by title or category" maxlength="100" />
+        <label for="category">Category</label>
+        <select id="category" name="Category">
+            <option value="">All categories</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option selected="@(Model.Category == category)">@category</option>
+            }
+        </select>
+        <button>Search</button>
+        <a asp-page="/Index">Clear</a>
+    </div>
+</form>
+
+<div class="section-heading">
+    <h2>Explore the catalogue</h2>
+    <span id="course-count">@Model.Courses.Count courses</span>
+</div>
+<p id="filter-hint">Live filtering applies to these results. Select Search to query the full catalogue.</p>
+
+<div class="grid">
+    @foreach (var course in Model.Courses)
+    {
+        <article class="card" data-course="@course.Title @course.Category" data-category="@course.Category">
+            <img class="course-art" src="@course.ImagePath" alt="@course.Title" />
+            <small>@course.Level</small>
+            <span class="tag">@course.Category</span>
+            <h2><a asp-page="/Courses/Details" asp-route-id="@course.Id">@course.Title</a></h2>
+            <p>@course.Description</p>
+            <div class="card-bottom">
+                <span>@course.LessonCount lessons</span>
+                <a asp-page="/Courses/Details" asp-route-id="@course.Id">View course →</a>
+            </div>
+        </article>
+    }
+</div>
+@if (Model.Courses.Count == 0)
+{
+    <p class="empty">No courses match your search. Try another term.</p>
+}

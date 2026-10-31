@@ -1,0 +1,29 @@
+@page
+@model LearnHub.Pages.Admin.QuestionEditModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add question" : "Edit question";
+}
+<a asp-page="/Admin/Questions" asp-route-id="@Model.CourseId">← Quiz questions</a>
+<h1>@ViewData["Title"]</h1>
+<form method="post" class="panel editor">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CourseId" />
+    <label asp-for="Input.Prompt"></label>
+    <input asp-for="Input.Prompt" required maxlength="400" /><span asp-validation-for="Input.Prompt" class="field-validation-error"></span>
+    <label asp-for="Input.OptionA"></label>
+    <input asp-for="Input.OptionA" required maxlength="200" /><span asp-validation-for="Input.OptionA" class="field-validation-error"></span>
+    <label asp-for="Input.OptionB"></label>
+    <input asp-for="Input.OptionB" required maxlength="200" /><span asp-validation-for="Input.OptionB" class="field-validation-error"></span>
+    <label asp-for="Input.OptionC"></label>
+    <input asp-for="Input.OptionC" required maxlength="200" /><span asp-validation-for="Input.OptionC" class="field-validation-error"></span>
+    <label asp-for="Input.CorrectOption"></label>
+    <select asp-for="Input.CorrectOption">
+        <option value="0">Option A</option>
+        <option value="1">Option B</option>
+        <option value="2">Option C</option>
+    </select><span asp-validation-for="Input.CorrectOption" class="field-validation-error"></span>
+    <label asp-for="Input.Explanation"></label>
+    <textarea asp-for="Input.Explanation" rows="3" required maxlength="800"></textarea><span asp-validation-for="Input.Explanation" class="field-validation-error"></span>
+    <button>Save question</button>
+</form>

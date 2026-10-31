@@ -1,0 +1,22 @@
+@page
+@model LearnHub.Pages.Admin.ModerationModel
+@{ ViewData["Title"] = "Discussion moderation"; }
+<a asp-page="/Admin/Index">← Administration</a>
+<h1>Discussion moderation</h1>
+@if (Model.Posts.Count == 0)
+{
+    <p>No discussion posts yet.</p>
+}
+@foreach (var post in Model.Posts)
+{
+    <article class="panel spaced">
+        <h2>@post.CourseTitle</h2>
+        <p>#@post.Id · @post.AuthorEmail · @(post.ParentId is null ? "Post" : $"Reply to post #{post.ParentId}")</p>
+        <p class="lesson-content">@post.Body</p>
+        <form method="post" asp-page-handler="Delete" data-confirm="Remove this post? Replies to it are removed too.">
+            <input type="hidden" name="id" value="@post.Id" />
+            <label><input type="checkbox" name="confirmed" value="true" required /> Confirm removal</label>
+            <button class="danger">Delete post</button>
+        </form>
+    </article>
+}

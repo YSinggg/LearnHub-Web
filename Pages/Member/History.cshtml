@@ -1,0 +1,22 @@
+@page
+@model LearnHub.Pages.Member.HistoryModel
+@{ ViewData["Title"] = "Quiz history"; }
+<h1>Quiz history</h1>
+<a asp-page="/Member/Dashboard">← My learning</a>
+@if (Model.Attempts.Count == 0)
+{
+    <p>No attempts yet. Open a course and take its quiz.</p>
+}
+@foreach (var attempt in Model.Attempts)
+{
+    <article class="panel spaced">
+        <h2>@attempt.CourseTitle</h2>
+        <p>@attempt.Score / @attempt.Total · @attempt.TakenUtc.ToString("yyyy-MM-dd HH:mm") UTC</p>
+        <a asp-page="/Member/Result" asp-route-id="@attempt.Id">Review answers</a>
+        <form method="post" asp-page-handler="Delete" data-confirm="Delete this attempt and its answers?">
+            <input type="hidden" name="id" value="@attempt.Id" />
+            <label><input type="checkbox" name="confirmed" value="true" required /> Confirm deletion</label>
+            <button class="quiet danger-text">Delete attempt</button>
+        </form>
+    </article>
+}

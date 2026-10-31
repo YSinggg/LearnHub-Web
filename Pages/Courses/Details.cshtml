@@ -1,0 +1,47 @@
+@page
+@model LearnHub.Pages.Courses.DetailsModel
+@{
+    ViewData["Title"] = Model.Course.Title;
+}
+<a asp-page="/Index">← All courses</a>
+<section class="hero compact">
+    <div class="intro compact">
+        <p class="eyebrow">@Model.Course.Category · @Model.Course.Level</p>
+        <h1>@Model.Course.Title</h1>
+        <p>@Model.Course.Description</p>
+    </div>
+    <img class="course-art" src="@Model.Course.ImagePath" alt="Illustration of @Model.Course.Category concepts" />
+</section>
+<div class="split">
+    <section class="panel">
+        <h2>What you will learn</h2>
+        <ol class="lesson-list">
+            @foreach (var lesson in Model.Course.Lessons)
+            {
+                <li>@lesson.Title</li>
+            }
+        </ol>
+    </section>
+    <aside class="panel accent">
+        <h2>Make progress today</h2>
+        <p>@Model.Course.Lessons.Count lessons · @Model.Course.QuestionCount quiz questions</p>
+        @if (Model.Enrolled)
+        {
+            <a class="button" asp-page="/Member/Study" asp-route-id="@Model.Course.Id">Continue learning</a>
+        }
+        else if (User.Identity?.IsAuthenticated == true)
+        {
+            <form method="post">
+                <input type="hidden" name="id" value="@Model.Course.Id" />
+                <button>Enrol in this course</button>
+            </form>
+        }
+        else
+        {
+            <a class="button" asp-page="/Account/Login"
+               asp-route-returnUrl="@Url.Page("/Courses/Details", new { id = Model.Course.Id })">Sign in to enrol</a>
+        }
+    </aside>
+</div>
+
+<a class="button spaced" asp-page="/Courses/Preview" asp-route-id="@Model.Course.Id">Preview the first lesson</a>

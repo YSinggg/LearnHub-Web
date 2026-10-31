@@ -1,0 +1,25 @@
+@page
+@model LearnHub.Pages.Member.NotesModel
+@{ ViewData["Title"] = "Private lesson notes"; }
+<a asp-page="/Member/Study" asp-route-id="@Model.Id" asp-fragment="lesson-@Model.LessonId">← Back to lesson</a>
+<h1>@Model.LessonTitle</h1>
+<p>Your notes are private to your account.</p>
+
+<form method="post" asp-page-handler="Save" class="panel editor">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="LessonId" />
+    <label asp-for="Body">My note</label>
+    <textarea asp-for="Body" required maxlength="4000" rows="10"></textarea>
+    <span asp-validation-for="Body" class="field-validation-error"></span>
+    <button>Save note</button>
+</form>
+
+@if (Model.Exists)
+{
+    <form method="post" asp-page-handler="Delete" data-confirm="Delete this note?">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="LessonId" />
+        <button class="danger spaced">Delete note</button>
+    </form>
+}

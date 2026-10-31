@@ -1,0 +1,36 @@
+@page
+@model LearnHub.Pages.Member.QuizModel
+@{
+    ViewData["Title"] = "Knowledge check";
+}
+<a asp-page="/Member/Study" asp-route-id="@Model.Course.Id">Back to lessons</a>
+<p class="eyebrow spaced">KNOWLEDGE CHECK</p>
+<h1>@Model.Course.Title</h1>
+@if (Model.Course.Questions.Count == 0)
+{
+    <p class="empty">No questions have been added yet.</p>
+}
+else
+{
+    <form method="post" class="quiz">
+        <input type="hidden" name="id" value="@Model.Course.Id" />
+        <div asp-validation-summary="ModelOnly"></div>
+        @foreach (var question in Model.Course.Questions)
+        {
+            int chosen = Model.Answers.GetValueOrDefault(question.Id, -1);
+            <fieldset class="panel">
+                <legend>@question.Prompt</legend>
+                @for (int i = 0; i < question.Options.Length; i++)
+                {
+                    <label class="option">
+                        <input type="radio" name="Answers[@question.Id]" value="@i" checked="@(chosen == i)" required />
+                        @question.Options[i]
+                    </label>
+                }
+            </fieldset>
+        }
+        <p id="answer-count">@Model.Answers.Count of @Model.Course.Questions.Count answered</p>
+        <progress id="answer-progress" max="@Model.Course.Questions.Count" value="@Model.Answers.Count">@Model.Answers.Count of @Model.Course.Questions.Count</progress>
+        <button>Submit answers</button>
+    </form>
+}

@@ -1,0 +1,9 @@
+@model Lesson
+@if (Model.IsYouTubeVideo)
+{
+    <figure>
+        <iframe class="lesson-video" src="@Model.YouTubeEmbedUrl" title="Video for @Model.Title"
+                allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </figure>
+}

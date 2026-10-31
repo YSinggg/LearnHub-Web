@@ -1,0 +1,44 @@
+@page
+@model LearnHub.Pages.Admin.UsersModel
+@{ ViewData["Title"] = "Manage users"; }
+<a asp-page="/Admin/Index">← Administration</a>
+<h1>Manage users</h1>
+<form method="get">
+    <label asp-for="Q">Search name or email</label>
+    <input asp-for="Q" maxlength="100" />
+    <span asp-validation-for="Q" class="field-validation-error"></span>
+    <button>Search</button>
+</form>
+
+@foreach (var user in Model.UsersList)
+{
+    var id = user.Id;
+    <article class="panel spaced">
+        <h2>@user.FullName</h2>
+        <p>@user.Email · @user.Role</p>
+        @if (id == Model.CurrentUserId)
+        {
+            <p>Your account cannot be changed here.</p>
+        }
+        else
+        {
+            <div class="user-actions">
+                <form method="post" asp-page-handler="Role" asp-route-q="@Model.Q" data-confirm="Change @user.Email to this role?">
+                    <input type="hidden" name="id" value="@id" />
+                    <label for="role-@id">Role</label>
+                    <select id="role-@id" name="role">
+                        <option selected="@(user.Role == "Member")">Member</option>
+                        <option selected="@(user.Role == "Admin")">Admin</option>
+                    </select>
+                    <button>Save role</button>
+                </form>
+                <form method="post" asp-page-handler="Delete" asp-route-q="@Model.Q"
+                      data-confirm="Delete @user.Email? This permanently removes their enrollments, progress, notes, posts and quiz results.">
+                    <input type="hidden" name="id" value="@id" />
+                    <label><input type="checkbox" name="confirmed" value="true" required /> I want to delete this user</label>
+                    <button class="danger">Delete user</button>
+                </form>
+            </div>
+        }
+    </article>
+}

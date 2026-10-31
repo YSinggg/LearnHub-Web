@@ -1,0 +1,38 @@
+@page
+@model LearnHub.Pages.Admin.CourseEditModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create course" : "Edit course";
+}
+<a asp-page="/Admin/Index">← Administration</a>
+<h1>@ViewData["Title"]</h1>
+<form method="post" class="panel editor">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="Input.Title"></label>
+    <input asp-for="Input.Title" required maxlength="100" />
+    <span asp-validation-for="Input.Title" class="field-validation-error"></span>
+
+    <label asp-for="Input.Category"></label>
+    <input asp-for="Input.Category" required maxlength="40" />
+    <span asp-validation-for="Input.Category" class="field-validation-error"></span>
+
+    <label asp-for="Input.Description"></label>
+    <textarea asp-for="Input.Description" required maxlength="1000" rows="5"></textarea>
+    <span asp-validation-for="Input.Description" class="field-validation-error"></span>
+
+    <label asp-for="Input.Level"></label>
+    <input asp-for="Input.Level" required maxlength="30" />
+    <span asp-validation-for="Input.Level" class="field-validation-error"></span>
+
+    <label asp-for="Input.ImagePath"></label>
+    <select asp-for="Input.ImagePath">
+        <option value="/images/Web_dev.jpg">Web development</option>
+        <option value="/images/database.jpg">Database</option>
+        <option value="/images/security.jpg">Security</option>
+        <option value="/images/JS.jpg">JavaScript</option>
+    </select>
+    <span asp-validation-for="Input.ImagePath" class="field-validation-error"></span>
+
+    <button>Save course</button>
+</form>
