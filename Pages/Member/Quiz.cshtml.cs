@@ -82,6 +82,7 @@ public class QuizModel : PageModel
             ", connection))
         {
             command.Parameters.AddWithValue("@u", GetUserId());
+            command.Parameters.AddWithValue("@c", id);
             var title = command.ExecuteScalar() as string;
             if (title == null) return false;
             Course = new Course { Id = id, Title = title };
