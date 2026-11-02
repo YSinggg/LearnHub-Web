@@ -6,6 +6,7 @@
         .answer-review {
             border-left: 5px solid var(--blue);
             margin: 1.5rem 0;
+            transition: all 0.25s ease;
         }
         .answer-review.correct {
             border-left-color: #1f8a5b;
@@ -16,33 +17,477 @@
         .answer-review h2 {
             font-size: 1.2rem;
         }
+
+        /* --- Gamified Scoring Enhancements --- */
+        .game-hero {
+            position: relative;
+            background: linear-gradient(135deg, #0d233a 0%, #173b5e 100%);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(16, 45, 69, 0.18);
+        }
+        .game-hero::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .game-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .game-rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            color: #ffe680;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .game-rank-icon {
+            font-size: 1.4rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .xp-pill {
+            background: #1f8a5b;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            letter-spacing: 0.04em;
+        }
+        .game-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .game-stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .game-stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #a8c4db;
+            margin-bottom: 0.25rem;
+        }
+        .game-stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #ffffff;
+        }
+        .progress-meter {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38ef7d, #11998e);
+            width: 0%;
+            transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            border-radius: 999px;
+        }
+        .game-actions-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        .game-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+        .game-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+        .game-btn-accent {
+            background: #ffe680;
+            color: #102d45;
+            font-weight: 700;
+            border-color: #ffd700;
+        }
+        .game-btn-accent:hover {
+            background: #fff0a6;
+            color: #102d45;
+        }
+        /* Filter tabs */
+        .filter-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background: var(--navy);
+            color: #ffffff;
+            border-color: var(--navy);
+        }
+        .filter-btn:hover:not(.active) {
+            background: var(--surface);
+            color: var(--ink);
+        }
+        .pro-tip {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(21, 88, 214, 0.06);
+            border-radius: 6px;
+            border-left: 3px solid var(--blue);
+            font-size: 0.92rem;
+        }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #102d45;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            display: none;
+            z-index: 10000;
+            font-size: 0.9rem;
+        }
     </style>
 }
 
+<canvas id="fx-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+<div id="toast" class="toast-msg"></div>
+
+<!-- Interactive Gaming Score Card -->
+<section class="game-hero">
+    <div class="game-header">
+        <div class="game-rank-badge">
+            <span class="game-rank-icon">@Model.RankBadge</span>
+            <span id="rank-title">@Model.RankTitle</span>
+        </div>
+        <span class="xp-pill">+@Model.XpEarned XP GAINED</span>
+    </div>
+
+    <p style="margin: 0; color: #a8c4db; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Knowledge Check Cleared</p>
+    <h1 style="margin: 0.25rem 0 0.5rem; color: #ffffff; font-size: 1.8rem;">@Model.Attempt.CourseTitle</h1>
+
+    <div class="progress-meter">
+        <div id="meter-fill" class="progress-meter-fill" data-percent="@Model.Percent"></div>
+    </div>
+
+    <div class="game-stats-grid">
+        <div class="game-stat-card">
+            <div class="game-stat-label">Accuracy</div>
+            <div class="game-stat-val"><span id="anim-percent">0</span>%</div>
+        </div>
+        <div class="game-stat-card">
+            <div class="game-stat-label">Correct</div>
+            <div class="game-stat-val" style="color: #4ade80;">@Model.CorrectCount</div>
+        </div>
+        <div class="game-stat-card">
+            <div class="game-stat-label">Total Questions</div>
+            <div class="game-stat-val">@Model.Attempt.Total</div>
+        </div>
+        <div class="game-stat-card">
+            <div class="game-stat-label">XP Points</div>
+            <div class="game-stat-val" style="color: #ffe680;">+@Model.XpEarned</div>
+        </div>
+    </div>
+
+    <!-- Gamified Interactive Controls -->
+    <div class="game-actions-bar">
+        <button type="button" class="game-btn game-btn-accent" id="btn-celebrate">
+            <span>🎉</span> Celebrate Again!
+        </button>
+        <button type="button" class="game-btn" id="btn-sound">
+            <span id="sound-icon">🔊</span> Victory Chime: <strong id="sound-status">ON</strong>
+        </button>
+        <button type="button" class="game-btn" id="btn-share">
+            <span>📋</span> Copy Result Card
+        </button>
+        <a class="game-btn" asp-page="/Member/Quiz" asp-route-id="@Model.Attempt.CourseId">
+            <span>🎮</span> Retake Quiz
+        </a>
+    </div>
+</section>
+
+<!-- Original Panel & Actions Kept Intact -->
 <section class="panel editor">
     <p class="eyebrow">KNOWLEDGE CHECK COMPLETE</p>
     <h1>@Model.Attempt.CourseTitle</h1>
-    <p class="score">@Model.Attempt.Score <span>/ @Model.Attempt.Total</span></p>
+    <p class="score"><span id="score-val">@Model.Attempt.Score</span> <span>/ @Model.Attempt.Total</span></p>
     <p>Your score has been saved. Revisit the lessons or try again when you are ready.</p>
     <div class="row">
         <a class="button" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">Review lessons</a>
+        <a class="button secondary" asp-page="/Member/Quiz" asp-route-id="@Model.Attempt.CourseId">🎮 Retake Quiz</a>
         <a asp-page="/Member/Dashboard">My learning</a>
     </div>
 </section>
 
-<h2>Answer review</h2>
+<div class="section-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
+    <h2>Answer review</h2>
+    <!-- Interactive Filter Tabs -->
+    <div class="filter-nav" id="filter-nav">
+        <button type="button" class="filter-btn active" data-filter="all">All (@Model.Answers.Count)</button>
+        <button type="button" class="filter-btn" data-filter="correct">✅ Correct (@Model.CorrectCount)</button>
+        <button type="button" class="filter-btn" data-filter="incorrect">❌ Need Review (@Model.IncorrectCount)</button>
+    </div>
+</div>
+
 @if (Model.Answers.Count == 0)
 {
     <p>This older attempt has no saved answers.</p>
 }
+
 @foreach (var answer in Model.Answers)
 {
-    <article class="panel answer-review @(answer.IsCorrect ? "correct" : "incorrect")">
+    <article class="panel answer-review @(answer.IsCorrect ? "correct" : "incorrect")" data-status="@(answer.IsCorrect ? "correct" : "incorrect")">
         <h2>@answer.Prompt</h2>
         <p><strong>@(answer.IsCorrect ? "Correct" : "Review this topic")</strong></p>
         <p>Your answer: @answer.ChosenText</p>
         <p>Correct answer: @answer.CorrectText</p>
-        <p>@answer.Explanation</p>
+        @if (!string.IsNullOrWhiteSpace(answer.Explanation))
+        {
+            <div class="pro-tip">
+                <strong>💡 Pro Tip & Explanation:</strong> @answer.Explanation
+            </div>
+        }
     </article>
 }
+
 <a asp-page="/Member/History">All quiz attempts</a>
+
+@section Scripts {
+<script>
+(function() {
+    // --- 1. Sound Synthesizer via Web Audio API (Zero external files) ---
+    var audioCtx = null;
+    var soundEnabled = true;
+
+    function playVictoryChime() {
+        if (!soundEnabled) return;
+        try {
+            audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+            var notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach(function(freq, i) {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.12);
+                gain.gain.setValueAtTime(0.001, audioCtx.currentTime + i * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + i * 0.12 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + i * 0.12);
+                osc.stop(audioCtx.currentTime + i * 0.12 + 0.4);
+            });
+        } catch (e) {
+            // Audio not allowed yet or not supported
+        }
+    }
+
+    var btnSound = document.getElementById("btn-sound");
+    if (btnSound) {
+        btnSound.addEventListener("click", function() {
+            soundEnabled = !soundEnabled;
+            document.getElementById("sound-status").textContent = soundEnabled ? "ON" : "OFF";
+            document.getElementById("sound-icon").textContent = soundEnabled ? "🔊" : "🔇";
+            if (soundEnabled) playVictoryChime();
+        });
+    }
+
+    // --- 2. Interactive Confetti Particle Cannon ---
+    var canvas = document.getElementById("fx-canvas");
+    var ctx = canvas.getContext("2d");
+    var particles = [];
+    var animating = false;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function fireConfetti() {
+        var colors = ["#ffd700", "#ff4757", "#2ed573", "#1e90ff", "#ffa502", "#ffffff"];
+        particles = [];
+        for (var i = 0; i < 90; i++) {
+            particles.push({
+                x: canvas.width * 0.5,
+                y: canvas.height * 0.4,
+                vx: (Math.random() - 0.5) * 18,
+                vy: (Math.random() - 0.9) * 20,
+                size: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * 360,
+                vr: (Math.random() - 0.5) * 12,
+                opacity: 1
+            });
+        }
+        if (!animating) {
+            animating = true;
+            renderParticles();
+        }
+    }
+
+    function renderParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var alive = false;
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            if (p.opacity <= 0.01) continue;
+            alive = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.45; // gravity
+            p.vx *= 0.98;
+            p.rotation += p.vr;
+            p.opacity -= 0.012;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+        }
+        if (alive) {
+            requestAnimationFrame(renderParticles);
+        } else {
+            animating = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    var btnCelebrate = document.getElementById("btn-celebrate");
+    if (btnCelebrate) {
+        btnCelebrate.addEventListener("click", function() {
+            fireConfetti();
+            playVictoryChime();
+        });
+    }
+
+    // --- 3. Animated Counter & Progress Meter ---
+    var targetPercent = parseInt(document.getElementById("meter-fill").getAttribute("data-percent") || "0", 10);
+    var animEl = document.getElementById("anim-percent");
+    var meter = document.getElementById("meter-fill");
+
+    setTimeout(function() {
+        meter.style.width = targetPercent + "%";
+        var count = 0;
+        var step = Math.max(1, Math.floor(targetPercent / 30));
+        var timer = setInterval(function() {
+            count += step;
+            if (count >= targetPercent) {
+                count = targetPercent;
+                clearInterval(timer);
+            }
+            if (animEl) animEl.textContent = count;
+        }, 30);
+
+        if (targetPercent >= 50) {
+            fireConfetti();
+            playVictoryChime();
+        }
+    }, 250);
+
+    // --- 4. Interactive Filter Tabs (All / Correct / Need Review) ---
+    var filterNav = document.getElementById("filter-nav");
+    if (filterNav) {
+        var buttons = filterNav.querySelectorAll(".filter-btn");
+        var cards = document.querySelectorAll(".answer-review");
+
+        buttons.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                buttons.forEach(function(b) { b.classList.remove("active"); });
+                btn.classList.add("active");
+                var mode = btn.getAttribute("data-filter");
+
+                cards.forEach(function(card) {
+                    var status = card.getAttribute("data-status");
+                    if (mode === "all" || status === mode) {
+                        card.style.display = "";
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+            });
+        });
+    }
+
+    // --- 5. Copy / Share Score Card ---
+    var btnShare = document.getElementById("btn-share");
+    var toast = document.getElementById("toast");
+    if (btnShare) {
+        btnShare.addEventListener("click", function() {
+            var text = "🎮 LearnHub Quiz Result: @Model.Attempt.CourseTitle\n" +
+                       "@Model.RankBadge @Model.RankTitle · Score: @Model.Attempt.Score/@Model.Attempt.Total (@Model.Percent%)\n" +
+                       "+@Model.XpEarned XP gained! 🚀";
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showToast("✅ Result card copied to clipboard!");
+                });
+            } else {
+                showToast("Result: @Model.RankBadge @Model.RankTitle (@Model.Percent%)");
+            }
+        });
+    }
+
+    function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.display = "block";
+        setTimeout(function() { toast.style.display = "none"; }, 2500);
+    }
+})();
+</script>
+}

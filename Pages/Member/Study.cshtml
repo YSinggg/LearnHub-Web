@@ -75,7 +75,7 @@
     </div>
 </div>
 
-@if (Model.Course.Category is "web Development" or "Javascript")
+@if (string.Equals(Model.Course.Category, "web development", StringComparison.OrdinalIgnoreCase) || string.Equals(Model.Course.Category, "javascript", StringComparison.OrdinalIgnoreCase))
 {
     <section class="panel spaced">
         <h2>Try it in the browser</h2>

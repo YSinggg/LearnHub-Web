@@ -19,6 +19,25 @@ public class ResultModel : PageModel
     public QuizAttempt Attempt { get; set; } = new QuizAttempt();
     public List<AnswerReview> Answers { get; set; } = new List<AnswerReview>();
 
+    public int Percent => Attempt.Total == 0 ? 0 : Attempt.Score * 100 / Attempt.Total;
+    public int CorrectCount => Answers.Count(a => a.IsCorrect);
+    public int IncorrectCount => Answers.Count(a => !a.IsCorrect);
+    public int XpEarned => Attempt.Score * 100;
+    public string RankTitle => Percent switch
+    {
+        100 => "S-RANK MASTER",
+        >= 80 => "A-RANK SCHOLAR",
+        >= 50 => "B-RANK APPRENTICE",
+        _ => "LEVELING UP"
+    };
+    public string RankBadge => Percent switch
+    {
+        100 => "🏆",
+        >= 80 => "🌟",
+        >= 50 => "⚡",
+        _ => "🎯"
+    };
+
     public IActionResult OnGet(int id)
     {
         using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));

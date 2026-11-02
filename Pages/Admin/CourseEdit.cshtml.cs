@@ -26,7 +26,7 @@ public class CourseEditModel : PageModel
         [Required, StringLength(30)]
         public string Level { get; set; } = "Beginner";
 
-        [Required, RegularExpression(@"^/images/[A-Za-z0-9_-]+\.(png|jpg)$"), Display(Name = "Course image")]
+        [Required, RegularExpression(@"(?i)^/images/[A-Za-z0-9_.-]+\.(png|jpg|jpeg|svg)$"), Display(Name = "Course image")]
         public string ImagePath { get; set; } = "";
     }
 

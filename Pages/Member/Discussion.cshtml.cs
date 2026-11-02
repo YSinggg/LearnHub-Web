@@ -32,7 +32,7 @@ public class DiscussionModel : PageModel
     {
         using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
         connection.Open();
-        if (!Load(connection)) return Forbid();
+        if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
 
         if (reply != 0)
         {
@@ -54,14 +54,14 @@ public class DiscussionModel : PageModel
     {
         using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
         connection.Open();
-        if (!Load(connection)) return Forbid();
+        if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
         if (string.IsNullOrWhiteSpace(Body)) ModelState.AddModelError(nameof(Body), "Write a message.");
         if (!ModelState.IsValid) return Page();
 
         string sql = "";
         if (PostId != 0)
         {
-            sql = "UPDATE discussion_posts SET body = @b WHERE id = @p AND user_id = @u";
+            sql = "UPDATE discussion_posts SET body = @b, updated_utc = UTC_TIMESTAMP() WHERE id = @p AND user_id = @u";
         }
         else if (ParentId != 0)
         {
@@ -88,7 +88,7 @@ public class DiscussionModel : PageModel
     {
         using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
         connection.Open();
-        if (!Load(connection)) return Forbid();
+        if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
 
         using var command = new MySqlCommand(
             "DELETE FROM discussion_posts WHERE id = @p AND user_id = @u", connection);
@@ -102,15 +102,29 @@ public class DiscussionModel : PageModel
 
     private bool Load(MySqlConnection connection)
     {
-        using (var command = new MySqlCommand("SELECT title FROM courses WHERE id = @c", connection))
+        using (var command = new MySqlCommand(@"
+            SELECT c.title,
+                   (SELECT COUNT(*) FROM enrollments WHERE user_id = @u AND course_id = @c) AS enrolled
+            FROM courses c WHERE c.id = @c
+            ", connection))
         {
             command.Parameters.AddWithValue("@c", Id);
-            var title = command.ExecuteScalar() as string;
-            if (title == null) return false;
-            CourseTitle = title;
+            command.Parameters.AddWithValue("@u", CurrentUserId);
+            using var reader = command.ExecuteReader();
+            if (!reader.Read()) return false;
+            int enrolled = Convert.ToInt32(reader["enrolled"]);
+            bool isAdmin = User.IsInRole("Admin");
+            if (enrolled == 0 && !isAdmin) return false;
+            CourseTitle = reader.GetString("title");
         }
 
-        using (var command = new MySqlCommand("SELECT id, parent_id, user_id, body, created_utc FROM discussion_posts WHERE course_id = @c ORDER BY created_utc", connection))
+        using (var command = new MySqlCommand(@"
+            SELECT p.id, p.parent_id, p.user_id, p.body, p.created_utc, p.updated_utc, u.full_name
+            FROM discussion_posts p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.course_id = @c
+            ORDER BY p.created_utc
+            ", connection))
         {
             command.Parameters.AddWithValue("@c", Id);
             using var reader = command.ExecuteReader();
@@ -122,8 +136,8 @@ public class DiscussionModel : PageModel
                     ParentId = reader.IsDBNull(reader.GetOrdinal("parent_id")) ? null : reader.GetInt32("parent_id"),
                     UserId = reader.GetInt32("user_id"),
                     Body = reader.GetString("body"),
-                    UpdatedUtc = reader.GetDateTime("created_utc"),
-                    AuthorName = "Student"
+                    UpdatedUtc = reader.GetDateTime("updated_utc"),
+                    AuthorName = reader.GetString("full_name")
                 });
             }
         }

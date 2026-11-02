@@ -121,3 +121,12 @@ public class AdminStats
     public int Attempts { get; set; }
     public int AveragePercent { get; set; }
 }
+
+public static class UserExtensions
+{
+    public static int GetUserId(this ClaimsPrincipal principal)
+    {
+        var claim = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        return int.TryParse(claim, out int id) ? id : 0;
+    }
+}
