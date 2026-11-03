@@ -135,10 +135,12 @@
             align-items: center;
             gap: 0.4rem;
             transition: all 0.2s ease;
+            text-decoration: none;
         }
         .game-btn:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
+            color: #ffffff;
         }
         .game-btn-accent {
             background: #ffe680;
@@ -185,24 +187,10 @@
             border-left: 3px solid var(--blue);
             font-size: 0.92rem;
         }
-        .toast-msg {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #102d45;
-            color: #ffffff;
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-            display: none;
-            z-index: 10000;
-            font-size: 0.9rem;
-        }
     </style>
 }
 
 <canvas id="fx-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
-<div id="toast" class="toast-msg"></div>
 
 <!-- Interactive Gaming Score Card -->
 <section class="game-hero">
@@ -245,14 +233,14 @@
         <button type="button" class="game-btn game-btn-accent" id="btn-celebrate">
             <span>🎉</span> Celebrate Again!
         </button>
-        <button type="button" class="game-btn" id="btn-sound">
-            <span id="sound-icon">🔊</span> Victory Chime: <strong id="sound-status">ON</strong>
-        </button>
-        <button type="button" class="game-btn" id="btn-share">
-            <span>📋</span> Copy Result Card
-        </button>
+        <a class="game-btn" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">
+            Review lessons
+        </a>
         <a class="game-btn" asp-page="/Member/Quiz" asp-route-id="@Model.Attempt.CourseId">
             <span>🎮</span> Retake Quiz
+        </a>
+        <a class="game-btn" asp-page="/Member/Dashboard">
+            My learning
         </a>
     </div>
 </section>
@@ -331,16 +319,6 @@
         } catch (e) {
             // Audio not allowed yet or not supported
         }
-    }
-
-    var btnSound = document.getElementById("btn-sound");
-    if (btnSound) {
-        btnSound.addEventListener("click", function() {
-            soundEnabled = !soundEnabled;
-            document.getElementById("sound-status").textContent = soundEnabled ? "ON" : "OFF";
-            document.getElementById("sound-icon").textContent = soundEnabled ? "🔊" : "🔇";
-            if (soundEnabled) playVictoryChime();
-        });
     }
 
     // --- 2. Interactive Confetti Particle Cannon ---
@@ -464,30 +442,6 @@
         });
     }
 
-    // --- 5. Copy / Share Score Card ---
-    var btnShare = document.getElementById("btn-share");
-    var toast = document.getElementById("toast");
-    if (btnShare) {
-        btnShare.addEventListener("click", function() {
-            var text = "🎮 LearnHub Quiz Result: @Model.Attempt.CourseTitle\n" +
-                       "@Model.RankBadge @Model.RankTitle · Score: @Model.Attempt.Score/@Model.Attempt.Total (@Model.Percent%)\n" +
-                       "+@Model.XpEarned XP gained! 🚀";
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(function() {
-                    showToast("✅ Result card copied to clipboard!");
-                });
-            } else {
-                showToast("Result: @Model.RankBadge @Model.RankTitle (@Model.Percent%)");
-            }
-        });
-    }
-
-    function showToast(msg) {
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.style.display = "block";
-        setTimeout(function() { toast.style.display = "none"; }, 2500);
-    }
 })();
 </script>
 }
