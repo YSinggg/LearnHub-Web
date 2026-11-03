@@ -222,8 +222,8 @@ for (var p = 0; p < passwordBoxes.length; p++) {
 
 // ---------- 3. Filter courses on the home page ----------
 
-var searchBox = document.getElementById("q");
-var categoryBox = document.getElementById("category");
+var searchBox = document.getElementById("S");
+var categoryBox = document.getElementById("Category");
 
 function filterCourses() {
   var searchText = searchBox.value.trim().toLowerCase();

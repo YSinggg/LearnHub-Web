@@ -1,6 +1,32 @@
 @inject IConfiguration Configuration
 @{
     var path = Context.Request.Path.Value ?? "";
+    var homeClass = "";
+    var dashboardClass = "";
+    var profileClass = "";
+    var historyClass = "";
+    var adminClass = "";
+
+    if (path == "/" || path.StartsWith("/Index"))
+    {
+        homeClass = "active";
+    }
+    if (path.StartsWith("/Member/Dashboard"))
+    {
+        dashboardClass = "active";
+    }
+    if (path.StartsWith("/Member/Profile"))
+    {
+        profileClass = "active";
+    }
+    if (path.StartsWith("/Member/History"))
+    {
+        historyClass = "active";
+    }
+    if (path.StartsWith("/Admin"))
+    {
+        adminClass = "active";
+    }
 
     int totalXp = 0;
     if (User.Identity?.IsAuthenticated == true && int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
@@ -32,7 +58,7 @@
             <img src="~/images/Logo.jpg" alt="LearnHub" width="36" height="36" /> LearnHub
         </a>
         <nav>
-            <a asp-page="/Index" class="@(path == "/" || path.StartsWith("/Index") ? "active" : "")">Explore courses</a>
+            <a asp-page="/Index" class="@(homeClass)">Explore courses</a>
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <div class="user-xp-widget" title="@expInLevel / @xpPerLevel XP (Total: @totalXp XP)">
@@ -42,12 +68,12 @@
                     </div>
                     <span class="xp-bar-text">@expInLevel/@xpPerLevel XP</span>
                 </div>
-                <a asp-page="/Member/Dashboard" class="@(path.StartsWith("/Member/Dashboard") ? "active" : "")">My learning</a>
-                <a asp-page="/Member/Profile" class="@(path.StartsWith("/Member/Profile") ? "active" : "")">My profile</a>
-                <a asp-page="/Member/History" class="@(path.StartsWith("/Member/History") ? "active" : "")">Quiz history</a>
+                <a asp-page="/Member/Dashboard" class="@(dashboardClass)">My learning</a>
+                <a asp-page="/Member/Profile" class="@(profileClass)">My profile</a>
+                <a asp-page="/Member/History" class="@(historyClass)">Quiz history</a>
                 @if (User.IsInRole("Admin"))
                 {
-                    <a asp-page="/Admin/Index" class="@(path.StartsWith("/Admin") ? "active" : "")">Administration</a>
+                    <a asp-page="/Admin/Index" class="@(adminClass)">Administration</a>
                 }
                 <form method="post" asp-page="/Account/Logout">
                     <button type="submit" class="quiet">Sign out</button>
