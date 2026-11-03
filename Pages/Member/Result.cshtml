@@ -233,6 +233,11 @@
         <button type="button" class="game-btn game-btn-accent" id="btn-celebrate">
             <span>🎉</span> Celebrate Again!
         </button>
+        <!-- Uncomment to re-enable the Victory Chime button:
+        <button type="button" class="game-btn" id="btn-sound">
+            <span id="sound-icon">🔊</span> Victory Chime: <strong id="sound-status">ON</strong>
+        </button>
+        -->
         <a class="game-btn" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">
             Review lessons
         </a>
@@ -306,6 +311,17 @@
         } catch (e) {
             // Audio not allowed yet or not supported
         }
+    }
+
+    // Victory Chime toggle listener (automatically activates if the Victory Chime button above is uncommented)
+    var btnSound = document.getElementById("btn-sound");
+    if (btnSound) {
+        btnSound.addEventListener("click", function() {
+            soundEnabled = !soundEnabled;
+            document.getElementById("sound-status").textContent = soundEnabled ? "ON" : "OFF";
+            document.getElementById("sound-icon").textContent = soundEnabled ? "🔊" : "🔇";
+            if (soundEnabled) playVictoryChime();
+        });
     }
 
     // --- 2. Interactive Confetti Particle Cannon ---
