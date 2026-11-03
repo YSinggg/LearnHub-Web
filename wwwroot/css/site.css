@@ -86,6 +86,42 @@ nav a {
 nav form {
   margin: 0;
 }
+.user-xp-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.user-level-badge {
+  background: var(--navy);
+  color: #ffe680;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 12px;
+}
+.xp-bar-track {
+  width: 70px;
+  height: 8px;
+  background: #d9e2eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.xp-bar-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #38ef7d, #11998e);
+  border-radius: 10px;
+}
+.xp-bar-text {
+  color: var(--muted);
+  font-size: 12px;
+}
 .container {
   box-sizing: border-box;
   width: 100%;

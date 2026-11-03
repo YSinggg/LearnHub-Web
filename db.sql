@@ -39,7 +39,7 @@ CREATE TABLE `courses` (
 
 LOCK TABLES `courses` WRITE;
 /*!40000 ALTER TABLE `courses` DISABLE KEYS */;
-INSERT INTO `courses` VALUES ('/images/Web_dev.jpg','Beginner',5,'Web Foundation','web Development','beginner introduction for HTML for content, CSS for style, and pages that work for everyone.'),('/images/database.jpg','Beginner',6,'Database Introduction','Database','Introduction of database on what they are, how tables and keys work, and the four basic SQL commands.'),('/images/security.jpg','Beginner',7,'Introduction of Web Security','Web Security','Introduction of web security. Strong passwords, logging in safely, user roles and everyday online threats.'),('/images/js.jpg','Beginner',8,'Introduction of JavaScript','Javascript','Introduction of JavaScript. Storing values, reacting to clicks and searching through lists.');
+INSERT INTO `courses` VALUES ('/images/Web_dev.jpg','Beginner',5,'Web Foundation','Web Development','beginner introduction for HTML for content, CSS for style, and pages that work for everyone.'),('/images/database.jpg','Beginner',6,'Database Introduction','Database','Introduction of database on what they are, how tables and keys work, and the four basic SQL commands.'),('/images/security.jpg','Beginner',7,'Introduction of Web Security','Web Security','Introduction of web security. Strong passwords, logging in safely, user roles and everyday online threats.'),('/images/js.jpg','Beginner',8,'Introduction of JavaScript','Javascript','Introduction of JavaScript. Storing values, reacting to clicks and searching through lists.');
 /*!40000 ALTER TABLE `courses` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -1,5 +1,20 @@
+@inject IConfiguration Configuration
 @{
     var path = Context.Request.Path.Value ?? "";
+
+    int totalXp = 0;
+    if (User.Identity?.IsAuthenticated == true && int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
+    {
+        using var connection = new MySqlConnection(Configuration.GetConnectionString("LearningDb"));
+        connection.Open();
+        using var command = new MySqlCommand("SELECT COALESCE(SUM(score), 0) * 100 FROM quiz_attempts WHERE user_id = @u", connection);
+        command.Parameters.AddWithValue("@u", userId);
+        totalXp = Convert.ToInt32(command.ExecuteScalar());
+    }
+    int xpPerLevel = 1000;
+    int level = (totalXp / xpPerLevel) + 1;
+    int expInLevel = totalXp % xpPerLevel;
+    int expPercent = expInLevel * 100 / xpPerLevel;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +35,13 @@
             <a asp-page="/Index" class="@(path == "/" || path.StartsWith("/Index") ? "active" : "")">Explore courses</a>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                <div class="user-xp-widget" title="@expInLevel / @xpPerLevel XP (Total: @totalXp XP)">
+                    <span class="user-level-badge">Lv.@level</span>
+                    <div class="xp-bar-track">
+                        <span class="xp-bar-fill" style="width: @(expPercent)%"></span>
+                    </div>
+                    <span class="xp-bar-text">@expInLevel/@xpPerLevel XP</span>
+                </div>
                 <a asp-page="/Member/Dashboard" class="@(path.StartsWith("/Member/Dashboard") ? "active" : "")">My learning</a>
                 <a asp-page="/Member/Profile" class="@(path.StartsWith("/Member/Profile") ? "active" : "")">My profile</a>
                 <a asp-page="/Member/History" class="@(path.StartsWith("/Member/History") ? "active" : "")">Quiz history</a>
