@@ -193,7 +193,6 @@
             font-size: 0.92rem;
         }
 
-        /* --- Simple CSS Confetti Animation --- */
         @@keyframes fall {
             0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
@@ -247,16 +246,11 @@
         </div>
     </div>
 
-    <!-- Gamified Interactive Controls -->
     <div class="game-actions-bar">
         <button type="button" class="game-btn game-btn-accent" id="btn-celebrate">
             <span>🎉</span> Celebrate Again!
         </button>
-        <!-- Uncomment to re-enable the Victory Chime button:
-        <button type="button" class="game-btn" id="btn-sound">
-            <span id="sound-icon">🔊</span> Victory Chime: <strong id="sound-status">ON</strong>
-        </button>
-        -->
+        <!-- <button type="button" class="game-btn" id="btn-sound"><span id="sound-icon">🔊</span> Victory Chime: <strong id="sound-status">ON</strong></button> -->
         <a class="game-btn" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">
             Review lessons
         </a>
@@ -271,7 +265,6 @@
 
 <div class="section-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
     <h2>Answer review</h2>
-    <!-- Interactive Filter Tabs -->
     <div class="filter-nav" id="filter-nav">
         <button type="button" class="filter-btn active" data-filter="all">All (@Model.Answers.Count)</button>
         <button type="button" class="filter-btn" data-filter="correct">✅ Correct (@Model.CorrectCount)</button>
@@ -304,113 +297,109 @@
 
 @section Scripts {
 <script>
-// ========================================================
-// LearnHub Quiz Results - Interactive Gamified Features
-// 1. Confetti Animation (CSS-based)
-// 2. Victory Chime Sound (Web Audio)
-// 3. Animated Score Counter
-// 4. Answer Filter Tabs
-// ========================================================
-
-// --- 1. Confetti Animation ---
+// Confetti drop animation
 function fireConfetti() {
-    var colors = ["#ffd700", "#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
-    for (var i = 0; i < 40; i++) {
-        var piece = document.createElement("div");
-        piece.className = "confetti-piece";
-        piece.style.left = (Math.random() * 100) + "vw";
-        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDelay = (Math.random() * 0.8) + "s";
-        piece.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s";
-        document.body.appendChild(piece);
+  var colors = ["#ffd700", "#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
+  for (var i = 0; i < 40; i++) {
+    var piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.left = (Math.random() * 100) + "vw";
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = (Math.random() * 0.8) + "s";
+    piece.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s";
+    document.body.appendChild(piece);
 
-        // Remove piece after animation completes
-        setTimeout(() => piece.remove(), 3000);
-    }
+    setTimeout(function() {
+      piece.remove();
+    }, 3000);
+  }
 }
 
-// --- 2. Victory Chime (3 Simple Beep Notes) ---
+// Victory sound chime (C, E, G notes)
 var soundEnabled = true;
 
 function playTone(freq, delay) {
-    try {
-        var ctx = new (window.AudioContext || window.webkitAudioContext)();
-        var osc = ctx.createOscillator();
-        osc.frequency.value = freq;
-        osc.connect(ctx.destination);
-        osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + 0.15);
-    } catch (e) {}
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    osc.frequency.value = freq;
+    osc.connect(ctx.destination);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + 0.15);
+  } catch (e) {}
 }
 
 function playVictoryChime() {
-    if (!soundEnabled) return;
-    playTone(523, 0.0); // Note C5
-    playTone(659, 0.1); // Note E5
-    playTone(784, 0.2); // Note G5
+  if (!soundEnabled) return;
+  playTone(523, 0.0);
+  playTone(659, 0.1);
+  playTone(784, 0.2);
 }
 
-// Victory Chime toggle listener (activates if the button above is uncommented)
 var btnSound = document.getElementById("btn-sound");
-if (btnSound) {
-    btnSound.addEventListener("click", function() {
-        soundEnabled = !soundEnabled;
-        document.getElementById("sound-status").textContent = soundEnabled ? "ON" : "OFF";
-        document.getElementById("sound-icon").textContent = soundEnabled ? "🔊" : "🔇";
-        if (soundEnabled) playVictoryChime();
-    });
+if (btnSound != null) {
+  btnSound.addEventListener("click", function() {
+    soundEnabled = !soundEnabled;
+    document.getElementById("sound-status").textContent = soundEnabled ? "ON" : "OFF";
+    document.getElementById("sound-icon").textContent = soundEnabled ? "🔊" : "🔇";
+    if (soundEnabled) playVictoryChime();
+  });
 }
 
-// Celebrate Again button
 var btnCelebrate = document.getElementById("btn-celebrate");
-if (btnCelebrate) {
-    btnCelebrate.addEventListener("click", function() {
-        fireConfetti();
-        playVictoryChime();
-    });
-}
-
-// --- 3. Animated Score Counter & Progress Bar ---
-var meter = document.getElementById("meter-fill");
-var counter = document.getElementById("anim-percent");
-var target = parseInt(meter.dataset.percent, 10);
-
-// Animate progress bar width
-setTimeout(function() {
-    meter.style.width = target + "%";
-}, 200);
-
-// Count up accuracy number from 0 to target
-var current = 0;
-var timer = setInterval(function() {
-    if (current >= target) {
-        clearInterval(timer);
-    } else {
-        current++;
-        counter.textContent = current;
-    }
-}, 20);
-
-// Trigger celebration on page load if score is >= 50%
-if (target >= 50) {
+if (btnCelebrate != null) {
+  btnCelebrate.addEventListener("click", function() {
     fireConfetti();
     playVictoryChime();
+  });
 }
 
-// --- 4. Filter Answer Cards (All / Correct / Need Review) ---
-document.querySelectorAll(".filter-btn").forEach(function(btn) {
-    btn.addEventListener("click", function() {
-        // Toggle active button highlight
-        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+// Animate progress bar and accuracy counter
+var meter = document.getElementById("meter-fill");
+var counter = document.getElementById("anim-percent");
+var target = parseInt(meter.getAttribute("data-percent") || "0", 10);
 
-        // Show or hide cards based on chosen filter
-        var filter = btn.dataset.filter;
-        document.querySelectorAll(".answer-review").forEach(function(card) {
-            var match = (filter === "all" || card.dataset.status === filter);
-            card.style.display = match ? "block" : "none";
-        });
-    });
-});
+setTimeout(function() {
+  meter.style.width = target + "%";
+}, 200);
+
+var current = 0;
+var timer = setInterval(function() {
+  if (current >= target) {
+    clearInterval(timer);
+  } else {
+    current++;
+    counter.textContent = current;
+  }
+}, 20);
+
+if (target >= 50) {
+  fireConfetti();
+  playVictoryChime();
+}
+
+// Filter answer review cards
+var filterButtons = document.querySelectorAll(".filter-btn");
+var answerCards = document.querySelectorAll(".answer-review");
+
+for (var b = 0; b < filterButtons.length; b++) {
+  filterButtons[b].addEventListener("click", function() {
+    for (var j = 0; j < filterButtons.length; j++) {
+      filterButtons[j].classList.remove("active");
+    }
+    this.classList.add("active");
+
+    var filter = this.getAttribute("data-filter");
+    for (var k = 0; k < answerCards.length; k++) {
+      var card = answerCards[k];
+      var status = card.getAttribute("data-status");
+      if (filter == "all" || status == filter) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
+      }
+    }
+  });
+}
 </script>
 }
