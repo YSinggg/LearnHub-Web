@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Courses;
 
 public class PreviewModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public PreviewModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public Course Course { get; set; } = new Course();
@@ -14,7 +14,7 @@ public class PreviewModel : PageModel
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using (var command = new MySqlCommand("SELECT title, category, image_path FROM courses WHERE id = @id", connection))
@@ -33,7 +33,7 @@ public class PreviewModel : PageModel
         }
 
         using (var command = new MySqlCommand(
-            "SELECT title, content, video_url, image_path, image_alt FROM lessons WHERE course_id = @id ORDER BY position, id LIMIT 1", connection))
+            "SELECT title, content, video_url, image_path FROM lessons WHERE course_id = @id ORDER BY position, id LIMIT 1", connection))
         {
             command.Parameters.AddWithValue("@id", id);
             using var reader = command.ExecuteReader();
@@ -44,7 +44,6 @@ public class PreviewModel : PageModel
                     Content = reader.GetString("content"),
                     VideoUrl = reader.GetString("video_url"),
                     ImagePath = reader.GetString("image_path"),
-                    ImageAlt = reader.GetString("image_alt"),
                 };
         }
         return Page();

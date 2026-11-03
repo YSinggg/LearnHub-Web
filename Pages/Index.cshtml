@@ -20,11 +20,11 @@
 </section>
 
 <form method="get" class="search" id="catalogue">
-    <label for="q">Find your next course</label>
+    <label for="S">Find your next course</label>
     <div class="row">
-        <input id="q" name="q" value="@Model.Q" placeholder="Search by title or category" maxlength="100" />
-        <label for="category">Category</label>
-        <select id="category" name="Category">
+        <input id="S" name="S" value="@Model.S" placeholder="Search by title or category" maxlength="100" />
+        <label for="Category">Category</label>
+        <select id="Category" name="Category">
             <option value="">All categories</option>
             @foreach (var category in Model.Categories)
             {

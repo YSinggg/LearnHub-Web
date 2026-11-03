@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class QuizModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public QuizModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     private int GetUserId()
@@ -22,14 +22,14 @@ public class QuizModel : PageModel
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         return Load(connection, id) ? Page() : RedirectToPage("/Courses/Details", new { id });
     }
 
     public IActionResult OnPost(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection, id)) return RedirectToPage("/Courses/Details", new { id });
         if (Course.Questions.Count == 0) return BadRequest();

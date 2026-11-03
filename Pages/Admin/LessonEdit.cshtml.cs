@@ -2,13 +2,13 @@ namespace LearnHub.Pages.Admin;
 
 public class LessonEditModel : PageModel
 {
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _environment;
+    private readonly IConfiguration configuration;
+    private readonly IWebHostEnvironment environment;
 
     public LessonEditModel(IConfiguration configuration, IWebHostEnvironment environment)
     {
-        _configuration = configuration;
-        _environment = environment;
+        this.configuration = configuration;
+        this.environment = environment;
     }
 
     [BindProperty] public int Id { get; set; }
@@ -41,7 +41,7 @@ public class LessonEditModel : PageModel
         get
         {
             var list = new List<string>();
-            string folder = Path.Combine(_environment.WebRootPath, "images");
+            string folder = Path.Combine(environment.WebRootPath, "images");
             if (Directory.Exists(folder))
             {
                 foreach (var file in Directory.GetFiles(folder))
@@ -63,13 +63,13 @@ public class LessonEditModel : PageModel
         Id = id;
         CourseId = courseId;
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!CourseExists(connection)) return NotFound();
         if (id == 0) return Page();
 
         using var command = new MySqlCommand(
-            "SELECT title, content, position, video_url, image_path, image_alt FROM lessons WHERE id = @id AND course_id = @course", connection);
+            "SELECT title, content, position, video_url, image_path FROM lessons WHERE id = @id AND course_id = @course", connection);
         command.Parameters.AddWithValue("@id", id);
         command.Parameters.AddWithValue("@course", courseId);
         using var reader = command.ExecuteReader();
@@ -82,7 +82,6 @@ public class LessonEditModel : PageModel
             Position = reader.GetInt32("position"),
             VideoUrl = reader.GetString("video_url"),
             ImagePath = reader.GetString("image_path"),
-            ImageAlt = reader.GetString("image_alt"),
         };
         return Page();
     }
@@ -104,18 +103,18 @@ public class LessonEditModel : PageModel
 
         if (!ModelState.IsValid) return Page();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!CourseExists(connection)) return NotFound();
 
         string sql = Id == 0
             ? @"
-              INSERT INTO lessons (course_id, title, content, position, video_url, image_path, image_alt)
-              VALUES (@course, @title, @content, @position, @video, @image, @alt)
+              INSERT INTO lessons (course_id, title, content, position, video_url, image_path)
+              VALUES (@course, @title, @content, @position, @video, @image)
               "
             : @"
               UPDATE lessons SET title = @title, content = @content, position = @position,
-                  video_url = @video, image_path = @image, image_alt = @alt
+                  video_url = @video, image_path = @image
               WHERE id = @id AND course_id = @course
               ";
         using var command = new MySqlCommand(sql, connection);
@@ -126,7 +125,6 @@ public class LessonEditModel : PageModel
         command.Parameters.AddWithValue("@position", Input.Position);
         command.Parameters.AddWithValue("@video", video);
         command.Parameters.AddWithValue("@image", image);
-        command.Parameters.AddWithValue("@alt", alt);
         if (command.ExecuteNonQuery() == 0 && Id != 0) return NotFound();
 
         TempData["Message"] = "Lesson saved.";

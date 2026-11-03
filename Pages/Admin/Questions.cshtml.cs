@@ -2,18 +2,18 @@ namespace LearnHub.Pages.Admin;
 
 public class QuestionsModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public QuestionsModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public Course Course { get; set; } = new Course();
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using (var command = new MySqlCommand("SELECT title FROM courses WHERE id = @id", connection))
@@ -38,7 +38,7 @@ public class QuestionsModel : PageModel
     {
         if (!confirmed) return BadRequest();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("DELETE FROM questions WHERE id = @item AND course_id = @course", connection);
         command.Parameters.AddWithValue("@item", itemId);

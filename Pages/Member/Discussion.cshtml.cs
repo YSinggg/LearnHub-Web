@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class DiscussionModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public DiscussionModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     [BindProperty(SupportsGet = true)] public int Id { get; set; }
@@ -30,7 +30,7 @@ public class DiscussionModel : PageModel
     public DiscussionPost? ReplyingTo => Posts.SingleOrDefault(p => p.Id == ParentId && p.ParentId == null);
     public IActionResult OnGet(int edit = 0, int reply = 0)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
 
@@ -52,7 +52,7 @@ public class DiscussionModel : PageModel
 
     public IActionResult OnPostSave()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
         if (string.IsNullOrWhiteSpace(Body)) ModelState.AddModelError(nameof(Body), "Write a message.");
@@ -86,7 +86,7 @@ public class DiscussionModel : PageModel
 
     public IActionResult OnPostDelete()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection)) return RedirectToPage("/Courses/Details", new { id = Id });
 

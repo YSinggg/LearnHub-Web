@@ -2,18 +2,18 @@ namespace LearnHub.Pages.Admin;
 
 public class ModerationModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public ModerationModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public List<DiscussionPost> Posts { get; set; } = new List<DiscussionPost>();
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand(@"
             SELECT p.id, p.parent_id, p.body, u.email, c.title
@@ -44,7 +44,7 @@ public class ModerationModel : PageModel
             return RedirectToPage();
         }
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("DELETE FROM discussion_posts WHERE id = @id", connection);
         command.Parameters.AddWithValue("@id", id);

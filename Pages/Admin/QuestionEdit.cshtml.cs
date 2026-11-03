@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Admin;
 
 public class QuestionEditModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public QuestionEditModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     [BindProperty] public int Id { get; set; }
@@ -28,7 +28,7 @@ public class QuestionEditModel : PageModel
         Id = id;
         CourseId = courseId;
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!CourseExists(connection)) return NotFound();
         if (id == 0) return Page();
@@ -58,7 +58,7 @@ public class QuestionEditModel : PageModel
     {
         if (!ModelState.IsValid) return Page();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!CourseExists(connection)) return NotFound();
 

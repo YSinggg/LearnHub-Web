@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class HistoryModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public HistoryModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -15,7 +15,7 @@ public class HistoryModel : PageModel
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand(@"
             SELECT a.id, c.title, a.score, a.total, a.taken_utc
@@ -42,7 +42,7 @@ public class HistoryModel : PageModel
     {
         if (!confirmed) return BadRequest();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("DELETE FROM quiz_attempts WHERE id = @a AND user_id = @u", connection);
         command.Parameters.AddWithValue("@a", id);

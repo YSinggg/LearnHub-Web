@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class UnenrolModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public UnenrolModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
   private int GetUserId()
@@ -22,7 +22,7 @@ public class UnenrolModel : PageModel
 
     public IActionResult OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand(@"
             SELECT c.title
@@ -47,9 +47,8 @@ public class UnenrolModel : PageModel
         }
 
         var userId = GetUserId();
-        if (userId == 0) return Challenge();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using var command = new MySqlCommand("DELETE FROM enrollments WHERE user_id = @u AND course_id = @c", connection);

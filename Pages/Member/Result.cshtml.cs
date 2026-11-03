@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class ResultModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public ResultModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     private int GetUserId()
@@ -28,7 +28,7 @@ public class ResultModel : PageModel
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using (var command = new MySqlCommand(@"
