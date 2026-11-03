@@ -9,13 +9,13 @@ namespace LearnHub.Pages.Account;
 
 public class LoginModel : PageModel
 {
-    private readonly IConfiguration _config;
-    private readonly IPasswordHasher<UserAccount> _hasher;
+    private readonly IConfiguration configuration;
+    private readonly IPasswordHasher<UserAccount> hasher;
 
     public LoginModel(IConfiguration config, IPasswordHasher<UserAccount> hasher)
     {
-        _config = config;
-        _hasher = hasher;
+        this.configuration = config;
+        this.hasher = hasher;
     }
 
     [BindProperty]
@@ -46,7 +46,7 @@ public class LoginModel : PageModel
 
         UserAccount? user = null;
 
-        using (var conn = new MySqlConnection(_config.GetConnectionString("LearningDb")))
+        using (var conn = new MySqlConnection(configuration.GetConnectionString("LearningDb")))
         {
             await conn.OpenAsync();
             var sql = "SELECT id, email, password_hash, role FROM users WHERE email = @email";
@@ -66,7 +66,7 @@ public class LoginModel : PageModel
             }
         }
 
-        if (user == null || _hasher.VerifyHashedPassword(user, user.PasswordHash, Input.Password) == PasswordVerificationResult.Failed)
+        if (user == null || hasher.VerifyHashedPassword(user, user.PasswordHash, Input.Password) == PasswordVerificationResult.Failed)
         {
             ModelState.AddModelError("", "Invalid email or password.");
             return Page();

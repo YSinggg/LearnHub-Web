@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Admin;
 
 public class CourseEditModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public CourseEditModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     [BindProperty] public int Id { get; set; }
@@ -35,7 +35,7 @@ public class CourseEditModel : PageModel
         Id = id;
         if (id == 0) return Page();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand(
             "SELECT title, category, description, level, image_path FROM courses WHERE id = @id", connection);
@@ -58,7 +58,7 @@ public class CourseEditModel : PageModel
     {
         if (!ModelState.IsValid) return Page();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         string sql = Id == 0

@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class NotesModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public NotesModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     private int GetUserId()
@@ -25,14 +25,14 @@ public class NotesModel : PageModel
 
     public IActionResult OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         return Load(connection, fillBody: true) ? Page() : Forbid();
     }
 
     public IActionResult OnPostSave()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection, fillBody: false)) return Forbid();
         if (string.IsNullOrWhiteSpace(Body)) ModelState.AddModelError(nameof(Body), "Write a note.");
@@ -53,7 +53,7 @@ public class NotesModel : PageModel
 
     public IActionResult OnPostDelete()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         if (!Load(connection, fillBody: false)) return Forbid();
 

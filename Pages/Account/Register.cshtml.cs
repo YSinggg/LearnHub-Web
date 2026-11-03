@@ -6,12 +6,12 @@ public class RegisterModel : PageModel
 {
     private const int DuplicateKeyError = 1062;
 
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
     private readonly IPasswordHasher<UserAccount> _hasher;
 
     public RegisterModel(IConfiguration configuration, IPasswordHasher<UserAccount> hasher)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
         _hasher = hasher;
     }
 
@@ -40,7 +40,7 @@ public class RegisterModel : PageModel
 
         var user = new UserAccount { Email = UserAccount.NormalizeEmail(Input.Email) };
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         string sql = "INSERT INTO users (email, password_hash, role, full_name) VALUES (@email, @hash, 'Member', @name)";
         using var command = new MySqlCommand(sql, connection);

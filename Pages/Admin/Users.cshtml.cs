@@ -4,11 +4,11 @@ public class UsersModel : PageModel
 {
     private static readonly string[] Roles = { "Member", "Admin" };
 
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public UsersModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     [BindProperty(SupportsGet = true), StringLength(100)]
@@ -28,7 +28,7 @@ public class UsersModel : PageModel
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand(
             "SELECT id, email, full_name, role FROM users WHERE LOCATE(@q, email) > 0 OR LOCATE(@q, full_name) > 0 ORDER BY email",
@@ -63,7 +63,7 @@ public class UsersModel : PageModel
     {
         if (id == CurrentUserId) return Back("You cannot change or delete your own account here.");
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var transaction = connection.BeginTransaction();
         var adminIds = new List<int>();

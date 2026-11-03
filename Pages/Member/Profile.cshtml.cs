@@ -6,13 +6,13 @@ namespace LearnHub.Pages.Member;
 
 public class ProfileModel : PageModel
 {
-    private readonly IConfiguration _configuration;
-    private readonly IPasswordHasher<UserAccount> _hasher;
+    private readonly IConfiguration configuration;
+    private readonly IPasswordHasher<UserAccount> hasher;
 
     public ProfileModel(IConfiguration configuration, IPasswordHasher<UserAccount> hasher)
     {
-        _configuration = configuration;
-        _hasher = hasher;
+        this.configuration = configuration;
+        this.hasher = hasher;
     }
 
     private int GetUserId()
@@ -55,7 +55,7 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("UPDATE users SET full_name = @name WHERE id = @u", connection);
         command.Parameters.AddWithValue("@name", FullName.Trim());
@@ -87,11 +87,11 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        using (var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb")))
+        using (var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb")))
         {
             connection.Open();
             using var command = new MySqlCommand("UPDATE users SET password_hash = @hash WHERE id = @u", connection);
-            command.Parameters.AddWithValue("@hash", _hasher.HashPassword(user, NewPassword));
+            command.Parameters.AddWithValue("@hash", hasher.HashPassword(user, NewPassword));
             command.Parameters.AddWithValue("@u", GetUserId());
             command.ExecuteNonQuery();
         }
@@ -121,7 +121,7 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        using (var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb")))
+        using (var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb")))
         {
             connection.Open();
             using var command = new MySqlCommand("DELETE FROM users WHERE id = @u AND role = 'Member'", connection);
@@ -135,11 +135,11 @@ public class ProfileModel : PageModel
 
     private bool PasswordMatches(UserAccount user, string? password) =>
         !string.IsNullOrEmpty(password)
-        && _hasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Failed;
+        && hasher.VerifyHashedPassword(user, user.PasswordHash, password) != PasswordVerificationResult.Failed;
 
     private UserAccount? LoadUser()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("SELECT email, full_name, role, password_hash FROM users WHERE id = @u", connection);
         command.Parameters.AddWithValue("@u", GetUserId());

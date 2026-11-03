@@ -25,7 +25,7 @@ public class StudyModel : PageModel
         connection.Open();
         if (!IsEnrolled(connection, id)) return RedirectToPage("/Courses/Details", new { id });
 
-        using (var command = new MySqlCommand("SELECT title, category, image_path FROM courses WHERE id = @id", connection))
+        using (var command = new MySqlCommand("SELECT title, category FROM courses WHERE id = @id", connection))
         {
             command.Parameters.AddWithValue("@id", id);
             using var reader = command.ExecuteReader();
@@ -36,12 +36,11 @@ public class StudyModel : PageModel
                 Id = id,
                 Title = reader.GetString("title"),
                 Category = reader.GetString("category"),
-                ImagePath = reader.GetString("image_path"),
             };
         }
 
         using (var command = new MySqlCommand(
-            "SELECT id, title, content, position, video_url, image_path, image_alt FROM lessons WHERE course_id = @id ORDER BY position, id", connection))
+            "SELECT id, title, content, position, video_url, image_path FROM lessons WHERE course_id = @id ORDER BY position, id", connection))
         {
             command.Parameters.AddWithValue("@id", id);
             using var reader = command.ExecuteReader();
@@ -55,7 +54,6 @@ public class StudyModel : PageModel
                     Position = reader.GetInt32("position"),
                     VideoUrl = reader.GetString("video_url"),
                     ImagePath = reader.GetString("image_path"),
-                    ImageAlt = reader.GetString("image_alt"),
                 });
             }
         }

@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Courses;
 
 public class DetailsModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public DetailsModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public Course Course { get; set; } = new Course();
@@ -14,7 +14,7 @@ public class DetailsModel : PageModel
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using (var command = new MySqlCommand(@"
@@ -44,7 +44,16 @@ public class DetailsModel : PageModel
             command.Parameters.AddWithValue("@id", id);
             using var reader = command.ExecuteReader();
             while (reader.Read())
-                Course.Lessons.Add(new Lesson { Id = reader.GetInt32("id"), Title = reader.GetString("title") });
+            {
+                int lessonId = reader.GetInt32("id");
+                string lessonTitle = reader.GetString("title");
+
+                Lesson lesson = new Lesson();
+                lesson.Id = lessonId;
+                lesson.Title = lessonTitle;
+
+                Course.Lessons.Add(lesson);
+            }
         }
 
         if (int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
@@ -61,7 +70,7 @@ public class DetailsModel : PageModel
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId)) return Challenge();
 
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         using (var check = new MySqlCommand("SELECT COUNT(*) FROM courses WHERE id = @id", connection))
@@ -71,11 +80,11 @@ public class DetailsModel : PageModel
         }
 
         bool alreadyEnrolled = false;
-        using (var checkCmd = new MySqlCommand("SELECT COUNT(*) FROM enrollments WHERE user_id = @u AND course_id = @c", connection))
+        using (var check = new MySqlCommand("SELECT COUNT(*) FROM enrollments WHERE user_id = @u AND course_id = @c", connection))
         {
-            checkCmd.Parameters.AddWithValue("@u", userId);
-            checkCmd.Parameters.AddWithValue("@c", id);
-            int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+            check.Parameters.AddWithValue("@u", userId);
+            check.Parameters.AddWithValue("@c", id);
+            int count = Convert.ToInt32(check.ExecuteScalar());
             if (count > 0)
             {
                 alreadyEnrolled = true;
@@ -84,10 +93,10 @@ public class DetailsModel : PageModel
 
         if (!alreadyEnrolled)
         {
-            using var insertCmd = new MySqlCommand("INSERT INTO enrollments (user_id, course_id) VALUES (@u, @c)", connection);
-            insertCmd.Parameters.AddWithValue("@u", userId);
-            insertCmd.Parameters.AddWithValue("@c", id);
-            insertCmd.ExecuteNonQuery();
+            using var insert = new MySqlCommand("INSERT INTO enrollments (user_id, course_id) VALUES (@u, @c)", connection);
+            insert.Parameters.AddWithValue("@u", userId);
+            insert.Parameters.AddWithValue("@c", id);
+            insert.ExecuteNonQuery();
         }
 
         TempData["Message"] = "Enrolled successfully.";

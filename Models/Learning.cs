@@ -36,7 +36,6 @@ public class Lesson
     public string Content { get; set; } = "";
     public string VideoUrl { get; set; } = "";
     public string ImagePath { get; set; } = "";
-    public string ImageAlt { get; set; } = "";
     public int Position { get; set; }
 
     public string? YouTubeId => GetYouTubeId(VideoUrl);

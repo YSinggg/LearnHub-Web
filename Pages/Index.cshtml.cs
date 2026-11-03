@@ -2,15 +2,15 @@ namespace LearnHub.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public IndexModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     [BindProperty(SupportsGet = true), StringLength(100)]
-    public string? Q { get; set; }
+    public string? S { get; set; }
 
     [BindProperty(SupportsGet = true)]
     public string? Category { get; set; }
@@ -20,7 +20,7 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         string sql = @"
@@ -47,7 +47,7 @@ public class IndexModel : PageModel
             });
         }
 
-        string search = Q?.Trim() ?? "";
+        string search = S?.Trim() ?? "";
 
         Categories = new List<string>();
         foreach (var c in all)

@@ -2,18 +2,18 @@ namespace LearnHub.Pages.Admin;
 
 public class CourseDeleteModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public CourseDeleteModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public Course Course { get; set; } = new Course();
 
     public IActionResult OnGet(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("SELECT title FROM courses WHERE id = @id", connection);
         command.Parameters.AddWithValue("@id", id);
@@ -26,7 +26,7 @@ public class CourseDeleteModel : PageModel
 
     public IActionResult OnPost(int id)
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
         using var command = new MySqlCommand("DELETE FROM courses WHERE id = @id", connection);
         command.Parameters.AddWithValue("@id", id);

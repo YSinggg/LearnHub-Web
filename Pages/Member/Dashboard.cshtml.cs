@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Member;
 
 public class DashboardModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public DashboardModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     private int GetUserId()
@@ -21,7 +21,7 @@ public class DashboardModel : PageModel
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         string coursesSql = @"

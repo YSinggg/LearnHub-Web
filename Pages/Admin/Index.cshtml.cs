@@ -2,11 +2,11 @@ namespace LearnHub.Pages.Admin;
 
 public class IndexModel : PageModel
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration configuration;
 
     public IndexModel(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public List<Course> Courses { get; set; } = new List<Course>();
@@ -15,7 +15,7 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        using var connection = new MySqlConnection(_configuration.GetConnectionString("LearningDb"));
+        using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
         string coursesSql = """
