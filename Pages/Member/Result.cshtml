@@ -245,19 +245,6 @@
     </div>
 </section>
 
-<!-- Original Panel & Actions Kept Intact -->
-<section class="panel editor">
-    <p class="eyebrow">KNOWLEDGE CHECK COMPLETE</p>
-    <h1>@Model.Attempt.CourseTitle</h1>
-    <p class="score"><span id="score-val">@Model.Attempt.Score</span> <span>/ @Model.Attempt.Total</span></p>
-    <p>Your score has been saved. Revisit the lessons or try again when you are ready.</p>
-    <div class="row">
-        <a class="button" asp-page="/Member/Study" asp-route-id="@Model.Attempt.CourseId">Review lessons</a>
-        <a class="button secondary" asp-page="/Member/Quiz" asp-route-id="@Model.Attempt.CourseId">🎮 Retake Quiz</a>
-        <a asp-page="/Member/Dashboard">My learning</a>
-    </div>
-</section>
-
 <div class="section-heading" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 2rem;">
     <h2>Answer review</h2>
     <!-- Interactive Filter Tabs -->
