@@ -19,24 +19,12 @@ public class ResultModel : PageModel
     public QuizAttempt Attempt { get; set; } = new QuizAttempt();
     public List<AnswerReview> Answers { get; set; } = new List<AnswerReview>();
 
-    public int Percent => Attempt.Total == 0 ? 0 : Attempt.Score * 100 / Attempt.Total;
-    public int CorrectCount => Answers.Count(a => a.IsCorrect);
-    public int IncorrectCount => Answers.Count(a => !a.IsCorrect);
-    public int XpEarned => Attempt.Score * 100;
-    public string RankTitle => Percent switch
-    {
-        100 => "S-RANK MASTER",
-        >= 80 => "A-RANK SCHOLAR",
-        >= 50 => "B-RANK APPRENTICE",
-        _ => "LEVELING UP"
-    };
-    public string RankBadge => Percent switch
-    {
-        100 => "🏆",
-        >= 80 => "🌟",
-        >= 50 => "⚡",
-        _ => "🎯"
-    };
+    public int Percent { get; set; }
+    public int CorrectCount { get; set; }
+    public int IncorrectCount { get; set; }
+    public int XpEarned { get; set; }
+    public string RankTitle { get; set; } = "";
+    public string RankBadge { get; set; } = "";
 
     public IActionResult OnGet(int id)
     {
@@ -99,6 +87,41 @@ public class ResultModel : PageModel
                 });
             }
         }
+
+        Percent = Attempt.Total > 0 ? (Attempt.Score * 100 / Attempt.Total) : 0;
+        XpEarned = Attempt.Score * 100;
+
+        CorrectCount = 0;
+        IncorrectCount = 0;
+        foreach (var a in Answers)
+        {
+            if (a.IsCorrect)
+                CorrectCount++;
+            else
+                IncorrectCount++;
+        }
+
+        if (Percent == 100)
+        {
+            RankTitle = "S-RANK MASTER";
+            RankBadge = "🏆";
+        }
+        else if (Percent >= 80)
+        {
+            RankTitle = "A-RANK SCHOLAR";
+            RankBadge = "🌟";
+        }
+        else if (Percent >= 50)
+        {
+            RankTitle = "B-RANK APPRENTICE";
+            RankBadge = "⚡";
+        }
+        else
+        {
+            RankTitle = "LEVELING UP";
+            RankBadge = "🎯";
+        }
+
         return Page();
     }
 }

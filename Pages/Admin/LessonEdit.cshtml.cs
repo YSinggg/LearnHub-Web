@@ -36,14 +36,27 @@ public class LessonEditModel : PageModel
         public string? ImageAlt { get; set; }
     }
 
-    public List<string> LessonImages =>
-    Directory.Exists(Path.Combine(_environment.WebRootPath, "images"))
-        ? Directory.GetFiles(Path.Combine(_environment.WebRootPath, "images"))
-            .Where(file => new[] { ".png", ".jpg" }.Contains(Path.GetExtension(file).ToLower()))
-            .Select(file => "/images/" + Path.GetFileName(file))
-            .OrderBy(file => file)
-            .ToList()
-        : new List<string>();
+    public List<string> LessonImages
+    {
+        get
+        {
+            var list = new List<string>();
+            string folder = Path.Combine(_environment.WebRootPath, "images");
+            if (Directory.Exists(folder))
+            {
+                foreach (var file in Directory.GetFiles(folder))
+                {
+                    string ext = Path.GetExtension(file).ToLower();
+                    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".svg")
+                    {
+                        list.Add("/images/" + Path.GetFileName(file));
+                    }
+                }
+                list.Sort();
+            }
+            return list;
+        }
+    }
 
     public IActionResult OnGet(int id, int courseId)
     {

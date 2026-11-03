@@ -11,7 +11,21 @@ public class IndexModel : PageModel
 
     public List<Course> Courses { get; set; } = new List<Course>();
     public AdminStats Stats { get; set; } = new AdminStats();
-    public int MaxEnrollments => Math.Max(1, Courses.Select(c => c.Enrollments).DefaultIfEmpty(0).Max());
+    public int MaxEnrollments
+    {
+        get
+        {
+            int max = 1;
+            foreach (var c in Courses)
+            {
+                if (c.Enrollments > max)
+                {
+                    max = c.Enrollments;
+                }
+            }
+            return max;
+        }
+    }
 
     public void OnGet()
     {
