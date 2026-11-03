@@ -247,17 +247,15 @@ function filterCourses() {
   }
 
   var countText = document.getElementById("course-count");
-  if (countText != null) {
     if (shown == 1) {
       countText.textContent = "1 matching course";
     } else {
       countText.textContent = shown + " matching courses";
     }
-  }
+  
 }
 
-if (searchBox != null && categoryBox != null) {
-  searchBox.addEventListener("input", filterCourses);
+if (categoryBox != null) {
   categoryBox.addEventListener("change", filterCourses);
 }
 

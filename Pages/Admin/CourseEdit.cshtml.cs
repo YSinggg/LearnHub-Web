@@ -26,7 +26,7 @@ public class CourseEditModel : PageModel
         [Required, StringLength(30)]
         public string Level { get; set; } = "Beginner";
 
-        [Required, RegularExpression(@"(?i)^/images/[A-Za-z0-9_.-]+\.(png|jpg|jpeg|svg)$"), Display(Name = "Course image")]
+        [Required, Display(Name = "Course image")]
         public string ImagePath { get; set; } = "";
     }
 
@@ -61,9 +61,18 @@ public class CourseEditModel : PageModel
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
-        string sql = Id == 0
-            ? "INSERT INTO courses (title, category, description, level, image_path) VALUES (@title, @category, @description, @level, @image)"
-            : "UPDATE courses SET title = @title, category = @category, description = @description, level = @level, image_path = @image WHERE id = @id";
+         string sql;
+        if (Id == 0)
+        {
+            sql = "INSERT INTO courses (title, category, description, level, image_path) " +
+                  "VALUES (@title, @category, @description, @level, @image)";
+        }
+        else
+        {
+            sql = "UPDATE courses SET title = @title, category = @category, description = @description, " +
+                  "level = @level, image_path = @image WHERE id = @id";
+        }
+
         using var command = new MySqlCommand(sql, connection);
         command.Parameters.AddWithValue("@id", Id);
         command.Parameters.AddWithValue("@title", Input.Title.Trim());
@@ -72,7 +81,12 @@ public class CourseEditModel : PageModel
         command.Parameters.AddWithValue("@level", Input.Level.Trim());
         command.Parameters.AddWithValue("@image", Input.ImagePath);
 
-        if (command.ExecuteNonQuery() == 0 && Id != 0) return NotFound();
+        int rowsChanged = command.ExecuteNonQuery();
+
+        if (Id != 0 && rowsChanged == 0)
+        {
+            return NotFound();
+        }
 
         TempData["Message"] = "Course saved.";
         return RedirectToPage("/Admin/Index");
