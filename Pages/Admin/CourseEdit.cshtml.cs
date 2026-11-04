@@ -61,6 +61,20 @@ public class CourseEditModel : PageModel
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
 
+        using (var check = new MySqlCommand(
+            "SELECT COUNT(*) FROM courses WHERE title = @title AND id <> @id", connection))
+        {
+            check.Parameters.AddWithValue("@title", Input.Title.Trim());
+            check.Parameters.AddWithValue("@id", Id);
+            int sameName = Convert.ToInt32(check.ExecuteScalar());
+
+            if (sameName > 0)
+            {
+                ModelState.AddModelError("Input.Title", "A course with this title already exists.");
+                return Page();
+            }
+        }
+
          string sql;
         if (Id == 0)
         {
