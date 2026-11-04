@@ -1,4 +1,4 @@
-// ---------- 1. Form checking ----------
+// 1. Form checking
 
 // Find the red error text 
 function showError(input, message) {
@@ -158,7 +158,7 @@ for (var f = 0; f < forms.length; f++) {
 }
 
 
-// ---------- 2. Show / hide password and strength ----------
+// 2. Show / hide password and strength
 
 function getStrengthText(password) {
   var score = 0;
@@ -220,8 +220,7 @@ for (var p = 0; p < passwordBoxes.length; p++) {
 }
 
 
-// ---------- 3. Filter courses on the home page ----------
-
+// 3. Filter courses on the home page
 var searchBox = document.getElementById("S");
 var categoryBox = document.getElementById("Category");
 
@@ -260,7 +259,7 @@ if (categoryBox != null) {
 }
 
 
-// ---------- 4. Count answered quiz questions ----------
+// 4. Count answered quiz questions
 
 var quiz = document.querySelector(".quiz");
 
@@ -279,8 +278,7 @@ if (quiz != null) {
 }
 
 
-// ---------- 5. YouTube video preview (admin lesson page) ----------
-
+// 5. YouTube video preview (admin lesson page)
 var videoBox = document.getElementById("Input_VideoUrl");
 var videoPreview = document.getElementById("video-preview");
 
@@ -324,7 +322,7 @@ if (videoBox != null && videoPreview != null) {
 }
 
 
-// ---------- 6. Code playground ----------
+// 6. Code playground
 
 var runButton = document.getElementById("run-code");
 
