@@ -62,7 +62,7 @@ public class CourseEditModel : PageModel
         connection.Open();
 
         using (var check = new MySqlCommand(
-            "SELECT COUNT(*) FROM courses WHERE title = @title AND id <> @id", connection))
+            "SELECT COUNT(*) FROM courses WHERE title = @title AND id != @id", connection))
         {
             check.Parameters.AddWithValue("@title", Input.Title.Trim());
             check.Parameters.AddWithValue("@id", Id);
