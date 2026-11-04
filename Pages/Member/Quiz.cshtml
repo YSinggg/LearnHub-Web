@@ -2,6 +2,7 @@
 @model LearnHub.Pages.Member.QuizModel
 @{
     ViewData["Title"] = "Knowledge check";
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
 }
 <a asp-page="/Member/Study" asp-route-id="@Model.Course.Id">Back to lessons</a>
 <p class="eyebrow spaced">KNOWLEDGE CHECK</p>
@@ -12,25 +13,48 @@
 }
 else
 {
-    <form method="post" class="quiz">
+    <!-- Auto-save notification banner -->
+    <div id="quiz-draft-banner" class="panel draft-banner" style="display: none; background: #e0f2fe; border: 1px solid #7dd3fc; margin-bottom: 20px; padding: 12px 18px; border-radius: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <strong style="color: #0369a1;">📝 Resumed your quiz draft:</strong>
+            <span style="color: #0c4a6e; margin-left: 6px;">Options you selected previously have been restored. (Saved at <span id="draft-saved-time" style="font-weight: 600;"></span>)</span>
+        </div>
+        <button type="button" class="button secondary small" onclick="clearQuizDraft()" style="margin: 0;">Reset answers</button>
+    </div>
+
+    <form method="post" class="quiz" id="quiz-form" data-course-id="@Model.Course.Id" data-user-id="@userId" novalidate>
         <input type="hidden" name="id" value="@Model.Course.Id" />
-        <div asp-validation-summary="ModelOnly"></div>
+        <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
+
         @foreach (var question in Model.Course.Questions)
         {
             int chosen = Model.Answers.GetValueOrDefault(question.Id, -1);
-            <fieldset class="panel">
-                <legend>@question.Prompt</legend>
+            <fieldset class="panel question-panel" id="question-@question.Id" data-question-id="@question.Id">
+                <legend>
+                    @question.Prompt
+                    <span class="unanswered-badge" style="display: none; color: #dc2626; font-size: 0.85rem; font-weight: bold; margin-left: 8px;">⚠️ Please answer this question</span>
+                </legend>
                 @for (int i = 0; i < question.Options.Length; i++)
                 {
                     <label class="option">
-                        <input type="radio" name="Answers[@question.Id]" value="@i" checked="@(chosen == i)" required />
+                        <input type="radio" name="Answers[@question.Id]" value="@i" checked="@(chosen == i)" />
                         @question.Options[i]
                     </label>
                 }
             </fieldset>
         }
-        <p id="answer-count">@Model.Answers.Count of @Model.Course.Questions.Count answered</p>
-        <progress id="answer-progress" max="@Model.Course.Questions.Count" value="@Model.Answers.Count">@Model.Answers.Count of @Model.Course.Questions.Count</progress>
-        <button>Submit answers</button>
+
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+            <p id="answer-count" style="margin: 0; font-weight: 500;">@Model.Answers.Count of @Model.Course.Questions.Count answered</p>
+            <span id="auto-save-indicator" style="font-size: 0.88rem; color: var(--muted);"></span>
+        </div>
+        <progress id="answer-progress" max="@Model.Course.Questions.Count" value="@Model.Answers.Count" style="width: 100%; height: 12px; margin-top: 6px;">@Model.Answers.Count of @Model.Course.Questions.Count</progress>
+
+        <!-- Unanswered Alert Banner -->
+        <div id="quiz-validation-alert" class="alert danger-alert" style="display: none; margin-top: 16px; background: #fee2e2; border: 1px solid #f87171; color: #991b1b; padding: 12px 18px; border-radius: 8px; font-weight: 500;">
+            ⚠️ <strong>You did not answer all questions!</strong> Please answer all highlighted questions before submitting.
+        </div>
+
+        <button type="submit" id="btn-submit-quiz" style="margin-top: 14px;">Submit answers</button>
     </form>
 }

@@ -11,6 +11,7 @@ public class CourseEditModel : PageModel
 
     [BindProperty] public int Id { get; set; }
     [BindProperty] public InputModel Input { get; set; } = new InputModel();
+    public List<string> ExistingCategories { get; set; } = new List<string>();
 
     public class InputModel
     {
@@ -30,13 +31,34 @@ public class CourseEditModel : PageModel
         public string ImagePath { get; set; } = "";
     }
 
-    public IActionResult OnGet(int id)
+    private void LoadCategories(MySqlConnection connection)
+    {
+        ExistingCategories.Clear();
+        using var cmd = new MySqlCommand("SELECT DISTINCT category FROM courses WHERE category != '' ORDER BY category", connection);
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            ExistingCategories.Add(reader.GetString("category"));
+        }
+    }
+
+    public IActionResult OnGet(int id, string? category = null)
     {
         Id = id;
-        if (id == 0) return Page();
 
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
+        LoadCategories(connection);
+
+        if (id == 0)
+        {
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                Input.Category = category.Trim();
+            }
+            return Page();
+        }
+
         using var command = new MySqlCommand(
             "SELECT title, category, description, level, image_path FROM courses WHERE id = @id", connection);
         command.Parameters.AddWithValue("@id", id);
@@ -56,10 +78,11 @@ public class CourseEditModel : PageModel
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid) return Page();
-
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
+        LoadCategories(connection);
+
+        if (!ModelState.IsValid) return Page();
 
         using (var check = new MySqlCommand(
             "SELECT COUNT(*) FROM courses WHERE title = @title AND id != @id", connection))
@@ -75,7 +98,7 @@ public class CourseEditModel : PageModel
             }
         }
 
-         string sql;
+        string sql;
         if (Id == 0)
         {
             sql = "INSERT INTO courses (title, category, description, level, image_path) " +

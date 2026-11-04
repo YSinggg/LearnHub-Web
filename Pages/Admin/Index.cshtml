@@ -11,7 +11,7 @@
 </div>
 
 <div class="grid stats-grid spaced">
-    <article class="panel"><h2>Accounts</h2><p class="score">@Model.Stats.Accounts</p></article>
+    <article class="panel"><h2>Learner accounts</h2><p class="score">@Model.Stats.Accounts</p><small class="muted-text">Excludes administrators</small></article>
     <article class="panel"><h2>Enrollments</h2><p class="score">@Model.Stats.Enrollments</p></article>
     <article class="panel"><h2>Quiz attempts</h2><p class="score">@Model.Stats.Attempts</p></article>
     <article class="panel"><h2>Average score</h2><p class="score">@Model.Stats.AveragePercent%</p></article>
@@ -52,8 +52,68 @@
 <p class="eyebrow spaced">CONTENT MANAGEMENT</p>
 <div class="section-heading">
     <h1>Course library</h1>
-    <a class="button" asp-page="/Admin/CourseEdit">Create course</a>
+    <button type="button" class="button" onclick="openCreateCourseModal()">Create course</button>
 </div>
+
+<!-- Modal Popup for Create Course -->
+<div id="create-course-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>Create New Course</h3>
+            <button type="button" class="modal-close-btn" onclick="closeCreateCourseModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-top: 0;"><strong>Is this new course under an existing category?</strong></p>
+            
+            <div class="modal-card-option">
+                <label for="modal-category-select"><strong>Yes, use an existing category:</strong></label>
+                <div class="row" style="margin-top: 8px; gap: 8px;">
+                    <select id="modal-category-select" style="flex: 1;">
+                        @foreach (var cat in Model.ExistingCategories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                    <button type="button" class="button" onclick="goToCourseEditWithCategory()">Select & Continue</button>
+                </div>
+            </div>
+
+            <div class="modal-or-divider"><span>OR</span></div>
+
+            <div class="modal-card-option">
+                <label><strong>No, create a brand new category:</strong></label>
+                <p class="field-hint" style="margin: 4px 0 10px 0;">Opens the course editor with a blank category field to enter a new name.</p>
+                <a class="button secondary" asp-page="/Admin/CourseEdit">Create with New Category</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCreateCourseModal() {
+        var modal = document.getElementById("create-course-modal");
+        if (modal) modal.style.display = "flex";
+    }
+    function closeCreateCourseModal() {
+        var modal = document.getElementById("create-course-modal");
+        if (modal) modal.style.display = "none";
+    }
+    function goToCourseEditWithCategory() {
+        var sel = document.getElementById("modal-category-select");
+        if (sel && sel.value) {
+            window.location.href = "/Admin/CourseEdit?category=" + encodeURIComponent(sel.value);
+        } else {
+            window.location.href = "/Admin/CourseEdit";
+        }
+    }
+    window.addEventListener("click", function(e) {
+        var modal = document.getElementById("create-course-modal");
+        if (e.target === modal) {
+            closeCreateCourseModal();
+        }
+    });
+</script>
+
 <div class="table-wrap">
     <table>
         <thead><tr><th>Course</th><th>Category</th><th>Content</th><th>Manage</th></tr></thead>

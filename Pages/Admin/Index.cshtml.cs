@@ -10,6 +10,7 @@ public class IndexModel : PageModel
     }
 
     public List<Course> Courses { get; set; } = new List<Course>();
+    public List<string> ExistingCategories { get; set; } = new List<string>();
     public AdminStats Stats { get; set; } = new AdminStats();
     public int MaxEnrollments
     {
@@ -60,11 +61,22 @@ public class IndexModel : PageModel
             }
         }
 
+        // Collect distinct categories for the Create Course modal popup
+        foreach (var c in Courses)
+        {
+            if (!string.IsNullOrWhiteSpace(c.Category) && !ExistingCategories.Contains(c.Category))
+            {
+                ExistingCategories.Add(c.Category);
+            }
+        }
+        ExistingCategories.Sort();
+
+        // Exclude 'Admin' role so only learner accounts are counted
         string statsSql = """
-            SELECT (SELECT COUNT(*) FROM users)       AS accounts,
-                   (SELECT COUNT(*) FROM enrollments) AS enrollments,
-                   COUNT(*)                           AS attempts,
-                   COALESCE(ROUND(AVG(score / total) * 100), 0) AS average
+            SELECT (SELECT COUNT(*) FROM users WHERE role != 'Admin') AS accounts,
+                   (SELECT COUNT(*) FROM enrollments)                 AS enrollments,
+                   COUNT(*)                                           AS attempts,
+                   COALESCE(ROUND(AVG(score / total) * 100), 0)       AS average
             FROM quiz_attempts
             """;
         using (var command = new MySqlCommand(statsSql, connection))

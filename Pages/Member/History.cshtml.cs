@@ -13,6 +13,10 @@ public class HistoryModel : PageModel
 
     public List<QuizAttempt> Attempts { get; set; } = new List<QuizAttempt>();
 
+    public int TotalAttempts => Attempts.Count;
+    public int AveragePercent => Attempts.Count == 0 ? 0 : (int)Math.Round(Attempts.Average(a => a.Total == 0 ? 0 : (double)a.Score * 100 / a.Total));
+    public int BestScorePercent => Attempts.Count == 0 ? 0 : Attempts.Max(a => a.Total == 0 ? 0 : a.Score * 100 / a.Total);
+
     public void OnGet()
     {
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));

@@ -246,12 +246,13 @@ function filterCourses() {
   }
 
   var countText = document.getElementById("course-count");
+  if (countText != null) {
     if (shown == 1) {
       countText.textContent = "1 matching course";
     } else {
       countText.textContent = shown + " matching courses";
     }
-  
+  }
 }
 
 if (categoryBox != null) {
@@ -259,22 +260,182 @@ if (categoryBox != null) {
 }
 
 
-// 4. Count answered quiz questions
+// 4. Quiz progress, auto-save draft with date/time, and submission validation
 
 var quiz = document.querySelector(".quiz");
 
+function getQuizStorageKey() {
+  if (!quiz) return "";
+  var courseId = quiz.getAttribute("data-course-id") || "0";
+  var userId = quiz.getAttribute("data-user-id") || "0";
+  return "learnhub_quiz_draft_course_" + courseId + "_user_" + userId;
+}
+
 function updateQuizCount() {
+  if (!quiz) return;
   var total = quiz.querySelectorAll("fieldset").length;
-  // Each question can only have one ticked answer
   var answered = quiz.querySelectorAll('input[type="radio"]:checked').length;
 
-  document.getElementById("answer-count").textContent = answered + " of " + total + " answered";
-  document.getElementById("answer-progress").value = answered;
+  var countElem = document.getElementById("answer-count");
+  if (countElem) {
+    countElem.textContent = answered + " of " + total + " answered";
+  }
+  var progressElem = document.getElementById("answer-progress");
+  if (progressElem) {
+    progressElem.value = answered;
+  }
+}
+
+// Store date and time and currently selected options whenever user clicks
+function saveQuizDraft() {
+  var key = getQuizStorageKey();
+  if (!key || !quiz) return;
+
+  var answers = {};
+  var checkedRadios = quiz.querySelectorAll('input[type="radio"]:checked');
+  checkedRadios.forEach(function (radio) {
+    answers[radio.name] = radio.value;
+  });
+
+  var now = new Date();
+  var timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+  var draftData = {
+    savedAt: timeStr,
+    timestamp: now.getTime(),
+    answers: answers
+  };
+
+  try {
+    localStorage.setItem(key, JSON.stringify(draftData));
+    var indicator = document.getElementById("auto-save-indicator");
+    if (indicator) {
+      indicator.textContent = "💾 Auto-saved at: " + timeStr;
+    }
+  } catch (err) {
+    // LocalStorage quota or access error
+  }
+}
+
+// Restore draft on page load so user stays where they left off
+function restoreQuizDraft() {
+  var key = getQuizStorageKey();
+  if (!key || !quiz) return;
+
+  try {
+    var raw = localStorage.getItem(key);
+    if (!raw) return;
+
+    var draft = JSON.parse(raw);
+    if (!draft || !draft.answers) return;
+
+    var restoredCount = 0;
+    for (var name in draft.answers) {
+      var val = draft.answers[name];
+      var radio = quiz.querySelector('input[type="radio"][name="' + CSS.escape(name) + '"][value="' + CSS.escape(val) + '"]');
+      if (radio) {
+        radio.checked = true;
+        restoredCount++;
+      }
+    }
+
+    if (restoredCount > 0) {
+      var banner = document.getElementById("quiz-draft-banner");
+      var timeDisplay = document.getElementById("draft-saved-time");
+      if (banner && timeDisplay) {
+        timeDisplay.textContent = draft.savedAt;
+        banner.style.display = "flex";
+      }
+      var indicator = document.getElementById("auto-save-indicator");
+      if (indicator) {
+        indicator.textContent = "💾 Restored from draft (" + draft.savedAt + ")";
+      }
+    }
+  } catch (err) {
+    // Ignore parse error
+  }
+}
+
+function clearQuizDraft() {
+  var key = getQuizStorageKey();
+  if (key) {
+    localStorage.removeItem(key);
+  }
+  if (quiz) {
+    quiz.querySelectorAll('input[type="radio"]').forEach(function (r) {
+      r.checked = false;
+    });
+    updateQuizCount();
+  }
+  var banner = document.getElementById("quiz-draft-banner");
+  if (banner) banner.style.display = "none";
+  var indicator = document.getElementById("auto-save-indicator");
+  if (indicator) indicator.textContent = "Draft reset.";
+  var alertBox = document.getElementById("quiz-validation-alert");
+  if (alertBox) alertBox.style.display = "none";
 }
 
 if (quiz != null) {
-  quiz.addEventListener("change", updateQuizCount);
+  // Restore any previously saved draft
+  restoreQuizDraft();
   updateQuizCount();
+
+  // Listen to option changes: update count, clear highlight, and auto-save
+  quiz.addEventListener("change", function (e) {
+    updateQuizCount();
+    saveQuizDraft();
+
+    // If an answered question was previously highlighted, remove warning
+    if (e.target && e.target.type === "radio") {
+      var fieldset = e.target.closest("fieldset");
+      if (fieldset) {
+        fieldset.classList.remove("unanswered-question");
+        var badge = fieldset.querySelector(".unanswered-badge");
+        if (badge) badge.style.display = "none";
+      }
+      var alertBox = document.getElementById("quiz-validation-alert");
+      var remaining = quiz.querySelectorAll("fieldset.unanswered-question").length;
+      if (alertBox && remaining === 0) {
+        alertBox.style.display = "none";
+      }
+    }
+  });
+
+  // Validate on submit: alert if any question is unanswered & highlight it
+  quiz.addEventListener("submit", function (e) {
+    var fieldsets = quiz.querySelectorAll("fieldset");
+    var unanswered = [];
+
+    fieldsets.forEach(function (fs) {
+      var checked = fs.querySelector('input[type="radio"]:checked');
+      var badge = fs.querySelector(".unanswered-badge");
+      if (!checked) {
+        unanswered.push(fs);
+        fs.classList.add("unanswered-question");
+        if (badge) badge.style.display = "inline";
+      } else {
+        fs.classList.remove("unanswered-question");
+        if (badge) badge.style.display = "none";
+      }
+    });
+
+    if (unanswered.length > 0) {
+      e.preventDefault();
+      var alertBox = document.getElementById("quiz-validation-alert");
+      if (alertBox) {
+        alertBox.style.display = "block";
+      }
+      // Smoothly scroll to the first unanswered question
+      unanswered[0].scrollIntoView({ behavior: "smooth", block: "center" });
+      return false;
+    }
+
+    // All answered: clear draft so retaking starts clean
+    var key = getQuizStorageKey();
+    if (key) {
+      localStorage.removeItem(key);
+    }
+  });
 }
 
 
