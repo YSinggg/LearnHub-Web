@@ -16,15 +16,15 @@
 <form method="post" asp-page-handler="Password" class="panel editor spaced">
     <h2>Change password</h2>
     <label asp-for="CurrentPassword">Current password</label>
-    <input asp-for="CurrentPassword" required autocomplete="current-password" />
+    <input asp-for="CurrentPassword" required autocomplete="current-password" oncopy="return false;" onpaste="return false;" oncut="return false;" />
     <span asp-validation-for="CurrentPassword" class="field-validation-error"></span>
 
     <label asp-for="NewPassword">New password</label>
-    <input asp-for="NewPassword" required minlength="10" maxlength="100" autocomplete="new-password" />
+    <input asp-for="NewPassword" required minlength="10" maxlength="100" autocomplete="new-password" oncopy="return false;" onpaste="return false;" oncut="return false;" />
     <span asp-validation-for="NewPassword" class="field-validation-error"></span>
 
     <label asp-for="ConfirmPassword">Confirm new password</label>
-    <input asp-for="ConfirmPassword" required autocomplete="new-password" />
+    <input asp-for="ConfirmPassword" required autocomplete="new-password" oncopy="return false;" onpaste="return false;" oncut="return false;" />
     <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
 
     <button>Change password</button>
@@ -38,7 +38,7 @@
         <p>This removes your enrollments, notes, posts, progress and quiz results.</p>
         <label asp-for="DeletePassword">Current password</label>
         <input asp-for="DeletePassword" required autocomplete="current-password"
-               data-msg-required="Enter your current password." />
+               data-msg-required="Enter your current password." oncopy="return false;" onpaste="return false;" oncut="return false;" />
         <span asp-validation-for="DeletePassword" class="field-validation-error"></span>
         <label>
             <input asp-for="ConfirmDelete" required data-msg-required="Tick this box to confirm." />

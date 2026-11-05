@@ -17,12 +17,12 @@
         <span asp-validation-for="Input.Email" class="field-validation-error"></span>
 
         <label asp-for="Input.Password"></label>
-        <input asp-for="Input.Password" autocomplete="new-password" required minlength="10" maxlength="100" />
+        <input asp-for="Input.Password" autocomplete="new-password" required minlength="10" maxlength="100" oncopy="return false;" onpaste="return false;" oncut="return false;" />
         <span asp-validation-for="Input.Password" class="field-validation-error"></span>
         <small>At least 10 characters, with uppercase, lowercase, a number and a symbol.</small>
 
         <label asp-for="Input.ConfirmPassword"></label>
-        <input asp-for="Input.ConfirmPassword" autocomplete="new-password" required maxlength="100" />
+        <input asp-for="Input.ConfirmPassword" autocomplete="new-password" required maxlength="100" oncopy="return false;" onpaste="return false;" oncut="return false;" />
         <span asp-validation-for="Input.ConfirmPassword" class="field-validation-error"></span>
 
         <button>Create account</button>

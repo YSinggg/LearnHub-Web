@@ -177,10 +177,58 @@ function getStrengthText(password) {
   return "Password strength: " + word + " (" + score + " of 5)";
 }
 
+// Show security notice when copy or paste is attempted on password fields
+function showPasswordSecurityNotice(box, actionText) {
+  var notice = box.securityNotice;
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.className = "password-security-notice";
+
+    var parent = box.parentNode;
+    var next = box.nextElementSibling;
+    while (next && (next.classList.contains("password-toggle") || next.classList.contains("strength"))) {
+      next = next.nextElementSibling;
+    }
+    if (next) {
+      parent.insertBefore(notice, next);
+    } else {
+      parent.appendChild(notice);
+    }
+    box.securityNotice = notice;
+  }
+
+  notice.innerHTML = "🔒 <strong>Security Policy:</strong> " + actionText + " is disabled on password fields for cybersecurity.";
+  notice.style.display = "block";
+  clearTimeout(notice.timer);
+  notice.timer = setTimeout(function () {
+    notice.style.display = "none";
+  }, 3500);
+}
+
 var passwordBoxes = document.querySelectorAll('input[type="password"]');
 
 for (var p = 0; p < passwordBoxes.length; p++) {
   var box = passwordBoxes[p];
+
+  // Disable copy, cut, paste, drop, and drag on password fields (safety rule)
+  box.addEventListener("copy", function (e) {
+    e.preventDefault();
+    showPasswordSecurityNotice(this, "Copying");
+  });
+  box.addEventListener("cut", function (e) {
+    e.preventDefault();
+    showPasswordSecurityNotice(this, "Cutting");
+  });
+  box.addEventListener("paste", function (e) {
+    e.preventDefault();
+    showPasswordSecurityNotice(this, "Pasting");
+  });
+  box.addEventListener("drop", function (e) {
+    e.preventDefault();
+  });
+  box.addEventListener("dragstart", function (e) {
+    e.preventDefault();
+  });
 
   // Show / hide button
   var showButton = document.createElement("button");

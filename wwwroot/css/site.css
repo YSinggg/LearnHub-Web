@@ -847,3 +847,17 @@ button.password-toggle,
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
   transition: all 0.2s ease;
 }
+
+
+/* Cybersecurity password policy warning */
+.password-security-notice {
+  display: none;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin: 4px 0 8px;
+}

@@ -14,7 +14,7 @@
         <span asp-validation-for="Input.Email" class="field-validation-error"></span>
 
         <label asp-for="Input.Password"></label>
-        <input asp-for="Input.Password" autocomplete="current-password" required maxlength="100" />
+        <input asp-for="Input.Password" autocomplete="current-password" required maxlength="100" oncopy="return false;" onpaste="return false;" oncut="return false;" />
         <span asp-validation-for="Input.Password" class="field-validation-error"></span>
 
         <button>Sign in</button>
