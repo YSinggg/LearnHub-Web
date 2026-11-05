@@ -43,7 +43,23 @@
                 }
 
                 <partial name="_LessonVideo" model="lesson" />
-                <a asp-page="/Member/Notes" asp-route-id="@Model.Course.Id" asp-route-lessonId="@lesson.Id">My private notes</a>
+
+                @if (Model.LessonNotes.TryGetValue(lesson.Id, out var userNote) && !string.IsNullOrWhiteSpace(userNote))
+                {
+                    <div class="lesson-note-box" style="margin: 14px 0; padding: 12px 16px; background: #fefce8; border: 1px solid #fde047; border-left: 4px solid #eab308; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <strong style="color: #854d0e; font-size: 0.95rem;">📝 My private notes:</strong>
+                            <a asp-page="/Member/Notes" asp-route-id="@Model.Course.Id" asp-route-lessonId="@lesson.Id" class="button small secondary" style="padding: 2px 8px; font-size: 0.8rem;">Edit note</a>
+                        </div>
+                        <p style="margin: 0; white-space: pre-wrap; color: #713f12; font-size: 0.95rem;">@userNote</p>
+                    </div>
+                }
+                else
+                {
+                    <div style="margin: 12px 0;">
+                        <a asp-page="/Member/Notes" asp-route-id="@Model.Course.Id" asp-route-lessonId="@lesson.Id">My private notes</a>
+                    </div>
+                }
 
                 <div class="lesson-nav">
                     @if (i > 0)
@@ -69,20 +85,7 @@
 
         @if (lessons.Count == 0)
         {
-            <p class="empty">Lessons are being prepared. Check back soon.</p>
+            <p class="empty">This course does not have any lessons yet.</p>
         }
     </div>
 </div>
-
-@if (string.Equals(Model.Course.Category, "web development", StringComparison.OrdinalIgnoreCase) || string.Equals(Model.Course.Category, "javascript", StringComparison.OrdinalIgnoreCase))
-{
-    <section class="panel spaced">
-        <h2>Try it in the browser</h2>
-        <p>Practise HTML, CSS and JavaScript below. This sandbox does not save your work.</p>
-        <label for="playground">Your code</label>
-        <textarea id="playground" rows="10" spellcheck="false">&lt;h1&gt;Hello LearnHub&lt;/h1&gt;
-&lt;style&gt;h1 { color: royalblue; }&lt;/style&gt;</textarea>
-        <button type="button" id="run-code">Run code</button>
-        <iframe id="code-preview" title="Your code preview" sandbox="allow-scripts" class="lesson-video"></iframe>
-    </section>
-}

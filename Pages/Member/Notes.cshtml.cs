@@ -48,7 +48,7 @@ public class NotesModel : PageModel
         command.ExecuteNonQuery();
 
         TempData["Message"] = "Private note saved.";
-        return RedirectToPage("/Courses/Details", new { id = Id });
+        return RedirectToPage("/Member/Study", new { id = Id });
     }
 
     public IActionResult OnPostDelete()
@@ -63,7 +63,7 @@ public class NotesModel : PageModel
         command.ExecuteNonQuery();
 
         TempData["Message"] = "Note deleted.";
-        return RedirectToPage("/Courses/Details", new { id = Id });
+        return RedirectToPage("/Member/Study", new { id = Id });
     }
 
     private bool Load(MySqlConnection connection, bool fillBody)

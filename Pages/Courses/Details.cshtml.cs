@@ -11,15 +11,6 @@ public class DetailsModel : PageModel
 
     public Course Course { get; set; } = new Course();
     public bool Enrolled { get; set; }
-    public List<UserLessonNote> UserNotes { get; set; } = new List<UserLessonNote>();
-
-    public class UserLessonNote
-    {
-        public int LessonId { get; set; }
-        public string LessonTitle { get; set; } = "";
-        public string NoteText { get; set; } = "";
-        public DateTime UpdatedUtc { get; set; }
-    }
 
     public IActionResult OnGet(int id)
     {
@@ -72,30 +63,6 @@ public class DetailsModel : PageModel
                 command.Parameters.AddWithValue("@user", userId);
                 command.Parameters.AddWithValue("@course", id);
                 Enrolled = Convert.ToInt32(command.ExecuteScalar()) > 0;
-            }
-
-            // Load user's private notes for this course to display directly on the course page
-            using (var noteCmd = new MySqlCommand(@"
-                SELECT l.id AS lesson_id, l.title AS lesson_title, n.note_text, n.updated_utc
-                FROM lesson_notes n
-                JOIN lessons l ON l.id = n.lesson_id
-                WHERE n.user_id = @u AND l.course_id = @c
-                ORDER BY l.position, l.id
-                ", connection))
-            {
-                noteCmd.Parameters.AddWithValue("@u", userId);
-                noteCmd.Parameters.AddWithValue("@c", id);
-                using var reader = noteCmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    UserNotes.Add(new UserLessonNote
-                    {
-                        LessonId = reader.GetInt32("lesson_id"),
-                        LessonTitle = reader.GetString("lesson_title"),
-                        NoteText = reader.GetString("note_text"),
-                        UpdatedUtc = reader.GetDateTime("updated_utc"),
-                    });
-                }
             }
         }
         return Page();

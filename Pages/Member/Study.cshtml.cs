@@ -18,6 +18,7 @@ public class StudyModel : PageModel
 
     public Course Course { get; set; } = new Course();
     public HashSet<int> Completed { get; set; } = new HashSet<int>();
+    public Dictionary<int, string> LessonNotes { get; set; } = new Dictionary<int, string>();
 
     public IActionResult OnGet(int id)
     {
@@ -69,6 +70,23 @@ public class StudyModel : PageModel
             using var reader = command.ExecuteReader();
             while (reader.Read()) Completed.Add(reader.GetInt32("lesson_id"));
         }
+
+        // Load private notes for lessons in this course
+        using (var noteCmd = new MySqlCommand(@"
+            SELECT n.lesson_id, n.note_text
+            FROM lesson_notes n JOIN lessons l ON l.id = n.lesson_id
+            WHERE n.user_id = @user AND l.course_id = @course
+            ", connection))
+        {
+            noteCmd.Parameters.AddWithValue("@user", GetUserId());
+            noteCmd.Parameters.AddWithValue("@course", id);
+            using var reader = noteCmd.ExecuteReader();
+            while (reader.Read())
+            {
+                LessonNotes[reader.GetInt32("lesson_id")] = reader.GetString("note_text");
+            }
+        }
+
         return Page();
     }
 
