@@ -849,7 +849,7 @@ button.password-toggle,
 }
 
 
-/* Cybersecurity password policy warning */
+/* Password field copy/paste notice */
 .password-security-notice {
   display: none;
   background: #fef2f2;

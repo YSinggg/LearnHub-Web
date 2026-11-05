@@ -197,7 +197,7 @@ function showPasswordSecurityNotice(box, actionText) {
     box.securityNotice = notice;
   }
 
-  notice.innerHTML = "🔒 <strong>Security Policy:</strong> " + actionText + " is disabled on password fields for cybersecurity.";
+  notice.innerHTML = "🔒 " + actionText + " is disabled on password fields.";
   notice.style.display = "block";
   clearTimeout(notice.timer);
   notice.timer = setTimeout(function () {
