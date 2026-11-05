@@ -22,7 +22,7 @@ else
         <button type="button" class="button secondary small" onclick="clearQuizDraft()" style="margin: 0;">Reset answers</button>
     </div>
 
-    <form method="post" class="quiz" id="quiz-form" data-course-id="@Model.Course.Id" data-user-id="@userId" novalidate>
+    <form method="post" class="quiz" id="quiz-form" data-course-id="@Model.Course.Id" data-course-title="@Model.Course.Title" data-user-id="@userId" novalidate>
         <input type="hidden" name="id" value="@Model.Course.Id" />
         <div asp-validation-summary="ModelOnly" class="field-validation-error"></div>
 

@@ -12,6 +12,7 @@ public class HistoryModel : PageModel
     private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     public List<QuizAttempt> Attempts { get; set; } = new List<QuizAttempt>();
+    public Dictionary<int, string> CourseTitles { get; set; } = new Dictionary<int, string>();
 
     public int TotalAttempts => Attempts.Count;
     public int AveragePercent => Attempts.Count == 0 ? 0 : (int)Math.Round(Attempts.Average(a => a.Total == 0 ? 0 : (double)a.Score * 100 / a.Total));
@@ -21,6 +22,16 @@ public class HistoryModel : PageModel
     {
         using var connection = new MySqlConnection(configuration.GetConnectionString("LearningDb"));
         connection.Open();
+
+        using (var titlesCmd = new MySqlCommand("SELECT id, title FROM courses", connection))
+        using (var titlesReader = titlesCmd.ExecuteReader())
+        {
+            while (titlesReader.Read())
+            {
+                CourseTitles[titlesReader.GetInt32("id")] = titlesReader.GetString("title");
+            }
+        }
+
         using var command = new MySqlCommand(@"
             SELECT a.id, c.title, a.score, a.total, a.taken_utc
             FROM quiz_attempts a JOIN courses c ON c.id = a.course_id

@@ -297,11 +297,24 @@ function saveQuizDraft() {
     answers[radio.name] = radio.value;
   });
 
+  var courseId = quiz.getAttribute("data-course-id") || "0";
+  var courseTitle = quiz.getAttribute("data-course-title") || "";
+  var total = quiz.querySelectorAll("fieldset").length;
+  var answered = checkedRadios.length;
+
   var now = new Date();
-  var timeStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+  var dateStr = now.toLocaleDateString();
+  var timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  var fullTimeStr = dateStr + " " + timeStr;
 
   var draftData = {
-    savedAt: timeStr,
+    courseId: courseId,
+    courseTitle: courseTitle,
+    answered: answered,
+    total: total,
+    savedAt: fullTimeStr,
+    savedDate: dateStr,
+    savedTime: timeStr,
     timestamp: now.getTime(),
     answers: answers
   };
@@ -310,7 +323,7 @@ function saveQuizDraft() {
     localStorage.setItem(key, JSON.stringify(draftData));
     var indicator = document.getElementById("auto-save-indicator");
     if (indicator) {
-      indicator.textContent = "💾 Auto-saved at: " + timeStr;
+      indicator.textContent = "💾 Auto-saved at: " + fullTimeStr;
     }
   } catch (err) {
     // LocalStorage quota or access error
@@ -343,12 +356,26 @@ function restoreQuizDraft() {
       var banner = document.getElementById("quiz-draft-banner");
       var timeDisplay = document.getElementById("draft-saved-time");
       if (banner && timeDisplay) {
-        timeDisplay.textContent = draft.savedAt;
+        timeDisplay.textContent = draft.savedAt || "Previously";
         banner.style.display = "flex";
       }
       var indicator = document.getElementById("auto-save-indicator");
       if (indicator) {
-        indicator.textContent = "💾 Restored from draft (" + draft.savedAt + ")";
+        indicator.textContent = "💾 Restored from draft (" + (draft.savedAt || "Previously") + ")";
+      }
+
+      // Enrich old drafts if courseTitle or total were missing
+      if (!draft.courseTitle || !draft.total) {
+        draft.courseId = quiz.getAttribute("data-course-id") || "0";
+        draft.courseTitle = quiz.getAttribute("data-course-title") || "";
+        draft.answered = restoredCount;
+        draft.total = quiz.querySelectorAll("fieldset").length;
+        if (!draft.savedDate && draft.savedAt) {
+          var parts = draft.savedAt.trim().split(" ");
+          draft.savedDate = parts[0] || "";
+          draft.savedTime = parts.slice(1).join(" ") || "";
+        }
+        try { localStorage.setItem(key, JSON.stringify(draft)); } catch (e) {}
       }
     }
   } catch (err) {
