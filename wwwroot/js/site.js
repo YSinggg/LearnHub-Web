@@ -177,9 +177,9 @@ function getStrengthText(password) {
   return "Password strength: " + word + " (" + score + " of 5)";
 }
 
-// Show security notice when copy or paste is attempted on password fields
-function showPasswordSecurityNotice(box, actionText) {
-  var notice = box.securityNotice;
+// Show warning when copy or paste is used on password fields
+function showPasswordWarning(box, actionText) {
+  var notice = box.warningBox;
   if (!notice) {
     notice = document.createElement("div");
     notice.className = "password-security-notice";
@@ -194,7 +194,7 @@ function showPasswordSecurityNotice(box, actionText) {
     } else {
       parent.appendChild(notice);
     }
-    box.securityNotice = notice;
+    box.warningBox = notice;
   }
 
   notice.innerHTML = "🔒 " + actionText + " is disabled on password fields.";
@@ -210,18 +210,18 @@ var passwordBoxes = document.querySelectorAll('input[type="password"]');
 for (var p = 0; p < passwordBoxes.length; p++) {
   var box = passwordBoxes[p];
 
-  // Disable copy, cut, paste, drop, and drag on password fields (safety rule)
+  // Disable copy, cut, paste and drag on password fields
   box.addEventListener("copy", function (e) {
     e.preventDefault();
-    showPasswordSecurityNotice(this, "Copying");
+    showPasswordWarning(this, "Copying");
   });
   box.addEventListener("cut", function (e) {
     e.preventDefault();
-    showPasswordSecurityNotice(this, "Cutting");
+    showPasswordWarning(this, "Cutting");
   });
   box.addEventListener("paste", function (e) {
     e.preventDefault();
-    showPasswordSecurityNotice(this, "Pasting");
+    showPasswordWarning(this, "Pasting");
   });
   box.addEventListener("drop", function (e) {
     e.preventDefault();
@@ -308,7 +308,7 @@ if (categoryBox != null) {
 }
 
 
-// 4. Quiz progress, auto-save draft with date/time, and submission validation
+// 4. Quiz progress, auto-save answers, and check unanswered questions
 
 var quiz = document.querySelector(".quiz");
 
@@ -334,7 +334,7 @@ function updateQuizCount() {
   }
 }
 
-// Store date and time and currently selected options whenever user clicks
+// Save selected answers and current time to localStorage
 function saveQuizDraft() {
   var key = getQuizStorageKey();
   if (!key || !quiz) return;
@@ -374,11 +374,10 @@ function saveQuizDraft() {
       indicator.textContent = "💾 Auto-saved at: " + fullTimeStr;
     }
   } catch (err) {
-    // LocalStorage quota or access error
   }
 }
 
-// Restore draft on page load so user stays where they left off
+// Load previously saved answers so user doesn't lose progress
 function restoreQuizDraft() {
   var key = getQuizStorageKey();
   if (!key || !quiz) return;
@@ -412,7 +411,7 @@ function restoreQuizDraft() {
         indicator.textContent = "💾 Restored from draft (" + (draft.savedAt || "Previously") + ")";
       }
 
-      // Enrich old drafts if courseTitle or total were missing
+      // Add course info if it was missing from an older draft
       if (!draft.courseTitle || !draft.total) {
         draft.courseId = quiz.getAttribute("data-course-id") || "0";
         draft.courseTitle = quiz.getAttribute("data-course-title") || "";
@@ -427,10 +426,10 @@ function restoreQuizDraft() {
       }
     }
   } catch (err) {
-    // Ignore parse error
   }
 }
 
+// Reset draft answers
 function clearQuizDraft() {
   var key = getQuizStorageKey();
   if (key) {
@@ -451,16 +450,15 @@ function clearQuizDraft() {
 }
 
 if (quiz != null) {
-  // Restore any previously saved draft
   restoreQuizDraft();
   updateQuizCount();
 
-  // Listen to option changes: update count, clear highlight, and auto-save
+  // Update count and save whenever an option is selected
   quiz.addEventListener("change", function (e) {
     updateQuizCount();
     saveQuizDraft();
 
-    // If an answered question was previously highlighted, remove warning
+    // Remove red warning from question once answered
     if (e.target && e.target.type === "radio") {
       var fieldset = e.target.closest("fieldset");
       if (fieldset) {
@@ -476,7 +474,7 @@ if (quiz != null) {
     }
   });
 
-  // Validate on submit: alert if any question is unanswered & highlight it
+  // Don't submit if any question is missed
   quiz.addEventListener("submit", function (e) {
     var fieldsets = quiz.querySelectorAll("fieldset");
     var unanswered = [];
@@ -500,12 +498,12 @@ if (quiz != null) {
       if (alertBox) {
         alertBox.style.display = "block";
       }
-      // Smoothly scroll to the first unanswered question
+      // Scroll to the first missed question
       unanswered[0].scrollIntoView({ behavior: "smooth", block: "center" });
       return false;
     }
 
-    // All answered: clear draft so retaking starts clean
+    // Clear draft when quiz is submitted
     var key = getQuizStorageKey();
     if (key) {
       localStorage.removeItem(key);

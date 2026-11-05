@@ -753,7 +753,7 @@ button.password-toggle,
 }
 
 
-/* Modal Popup Styles (for Create Course dialog) */
+/* Create course modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -840,7 +840,7 @@ button.password-toggle,
   padding: 0 10px;
 }
 
-/* Quiz Submission Warning Highlight */
+/* Highlight unanswered question */
 .unanswered-question {
   border: 2px solid #ef4444 !important;
   background-color: #fef2f2 !important;
@@ -849,7 +849,7 @@ button.password-toggle,
 }
 
 
-/* Password field copy/paste notice */
+/* Password notice */
 .password-security-notice {
   display: none;
   background: #fef2f2;
